@@ -27,6 +27,7 @@ dataset_name       = "KayPentax"
 dataset_path       = "/home/hguan/7100-Master-Project/Dataset-" + dataset_name
 num_folds          = 5   
 train_percent      = 90
+num_MFCCs          = 20
 best_model_name    = "best_model_this_fold.hdf5"
 val_loss_plot_name = "Val_Loss_Plot_"
 monitor            = "val_loss"
@@ -40,19 +41,20 @@ snippet_hop         = 100   #in ms
 fft_length          = 512
 fft_hop             = 128
 mel_length          = 128
-dsp_package         = [fs, snippet_length, snippet_hop, fft_length, fft_hop, mel_length]
+dsp_package_1       = [fs, snippet_length, snippet_hop, fft_length, fft_hop, mel_length]
 input_vector_length = mel_length * math.ceil(snippet_length / 1000 * fs / fft_hop)
 vector_length       = 128
-input_name          = "MelSpectrogram"
-
+input_name_1        = "MelSpectrogram"
+input_name_2        = "MFCCs"
+dsp_package_2       = [fs, snippet_length, snippet_hop, fft_length, fft_hop, num_MFCCs * 2]
 
 # =============================================================================
 # Autoencoder Initialization
-encoding_dimension = 128
-encoder_layer      = 5
-decoder_layer      = 5
+encoding_dimension = 64
+encoder_layer      = 3
+decoder_layer      = 3
 epoch_limit        = 100000
-batch_auto         = 1024
+batch_auto         = 512
 shuffle_choice     = True
 loss_function      = 'mean_squared_error'
 arch_bundle        = [encoder_layer, encoding_dimension, decoder_layer]
@@ -86,16 +88,20 @@ total_snip_con_mat  = np.array([[0,0],[0,0]])
 
 
 # =============================================================================
-data_file_name       = input_name + "_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" + "_block" + str(fft_length) + "_hop" + str(fft_hop) + "_mel" + str(mel_length)
-aug_dict_file_name   = "Dictionary_"    + str(snippet_length) + "ms_" + str(snippet_hop) + "ms"                   
-unaug_dict_file_name = "Dictionary_"    + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" + "_unaugmented" 
+melSpec_file_name    = input_name_1 + "_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" + "_block" + str(fft_length) + "_hop" + str(fft_hop) + "_mel" + str(mel_length)
+MFCCs_file_name      = input_name_2 + "_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" + "_block" + str(fft_length) + "_hop" + str(fft_hop) 
+aug_dict_file_name   = "Dictionary_"      + str(snippet_length) + "ms_" + str(snippet_hop) + "ms"                   
+unaug_dict_file_name = "Dictionary_"      + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" + "_unaugmented" 
 
-temp_file_1          = open(dataset_path + '/' + data_file_name       + '.pickle', 'rb')  
-temp_file_2          = open(dataset_path + '/' + aug_dict_file_name   + '.pickle', 'rb')
-temp_file_3          = open(dataset_path + '/' + unaug_dict_file_name + '.pickle', 'rb')
-data                 = pickle.load(temp_file_1)
-aug_dict             = pickle.load(temp_file_2)
-unaug_dict           = pickle.load(temp_file_3)
+temp_file_1          = open(dataset_path + '/' + melSpec_file_name    + '.pickle', 'rb')  
+temp_file_2          = open(dataset_path + '/' + MFCCs_file_name      + '.pickle', 'rb')
+temp_file_3          = open(dataset_path + '/' + aug_dict_file_name   + '.pickle', 'rb')
+temp_file_4          = open(dataset_path + '/' + unaug_dict_file_name + '.pickle', 'rb')
+
+melSpec_data         = pickle.load(temp_file_1)
+MFCCs_data           = pickle.load(temp_file_2)
+aug_dict             = pickle.load(temp_file_3)
+unaug_dict           = pickle.load(temp_file_4)
 
 
 # =============================================================================
@@ -122,9 +128,9 @@ for fold_index in range(num_folds):
 
 
     # =============================================================================
-    train_package     = loadMelSpectrogram(train_combo,    classes, dsp_package, dataset_path, data, True,  aug_dict)   
-    validate_package  = loadMelSpectrogram(validate_combo, classes, dsp_package, dataset_path, data, False, unaug_dict)   
-    test_package      = loadMelSpectrogram(test_combo,     classes, dsp_package, dataset_path, data, False, unaug_dict)
+    train_package     = loadMelSpectrogram(train_combo,    classes, dsp_package_1, dataset_path, melSpec_data, True,  aug_dict)   
+    validate_package  = loadMelSpectrogram(validate_combo, classes, dsp_package_1, dataset_path, melSpec_data, False, unaug_dict)   
+    test_package      = loadMelSpectrogram(test_combo,     classes, dsp_package_1, dataset_path, melSpec_data, False, unaug_dict)
     
 
     # =============================================================================
@@ -139,6 +145,7 @@ for fold_index in range(num_folds):
     # =============================================================================
     _, history, encodeLayer_index = autoencoder.main(input_vector_length, train_data, validate_data, arch_bundle, train_bundle_auto)
     best_autoencoder              = load_model(best_model_name)
+    print(best_autoencoder.summary())
     best_encoder                  = Model(inputs  = best_autoencoder.inputs, outputs = best_autoencoder.layers[encodeLayer_index].output)
     
 
@@ -148,18 +155,64 @@ for fold_index in range(num_folds):
     plt.savefig(val_loss_plot_name + str(fold_index + 1) + ".png")
     plt.clf()
 
-
+  
     # =============================================================================
     train_data_encoded     = best_encoder.predict(train_data)
     validate_data_encoded  = best_encoder.predict(validate_data)
     test_data_encoded      = best_encoder.predict(test_data)
 
+    # ==============================================================================
+    train_package    = loadMFCCs(train_combo,    classes, dsp_package_2, dataset_path, MFCCs_data, True,  aug_dict)
+    validate_package = loadMFCCs(validate_combo, classes, dsp_package_2, dataset_path, MFCCs_data, False, unaug_dict)
+    test_package     = loadMFCCs(test_combo,     classes, dsp_package_2, dataset_path, MFCCs_data, False, unaug_dict)
+    train_data,    _,  _, _,  train_dist,    _ = train_package
+    validate_data, _,  _, _,  validate_dist, _ = validate_package
+    test_data,     _,  _, _,  test_dist,     _ = test_package
 
     # =============================================================================
-    fold_result_package  = mySVM.method1(train_data_encoded,    train_label3, 
-                                         validate_data_encoded, validate_label3, 
-                                         test_data_encoded,     test_label3,
-                                         test_combo,            test_augment_amount)
+    train_MFCCs_normalized    = np.zeros((train_data.shape))
+    validate_MFCCs_normalized = np.zeros((validate_data.shape))
+    test_MFCCs_normalized     = np.zeros((test_data.shape))
+
+
+    # =============================================================================
+    standard_max_list  = [0] * num_MFCCs * 2
+    standard_min_list  = [0] * num_MFCCs * 2
+
+    
+    for i in range(num_MFCCs * 2):
+
+        # ==============================================================================
+        standard_max = max(np.amax(train_data[:, i]), np.amax(validate_data[:, i]))
+        standard_min = min(np.amin(train_data[:, i]), np.amin(validate_data[:, i]))
+
+        standard_max_list[i] = round(standard_max, 3)
+        standard_min_list[i] = round(standard_min, 3)
+           
+        train_MFCCs_normalized[:, i]    = (train_data[:, i]    - standard_min_list[i]) / (standard_max_list[i] - standard_min_list[i])
+        validate_MFCCs_normalized[:, i] = (validate_data[:, i] - standard_min_list[i]) / (standard_max_list[i] - standard_min_list[i])
+
+    
+    # ==============================================================================
+    for i in range(num_MFCCs * 2):
+        test_MFCCs_normalized[:, i]    = (test_data[:, i]    - standard_min_list[i]) / (standard_max_list[i] - standard_min_list[i])
+        test_MFCCs_normalized[:, i]    = np.clip(test_MFCCs_normalized[:, i], 0, 1)
+
+    print(train_data_encoded.shape)
+    print(train_MFCCs_normalized.shape)
+    
+    
+    # ==============================================================================
+    train_features    = np.concatenate((train_data_encoded,    train_MFCCs_normalized),    axis = 1)
+    validate_features = np.concatenate((validate_data_encoded, validate_MFCCs_normalized), axis = 1)
+    test_features     = np.concatenate((test_data_encoded,     test_MFCCs_normalized),     axis = 1)
+
+
+    # =============================================================================
+    fold_result_package  = mySVM.method1(train_features,    train_label3, 
+                                         validate_features, validate_label3, 
+                                         test_features,     test_label3,
+                                         test_combo,        test_augment_amount)
     
     
     # =============================================================================

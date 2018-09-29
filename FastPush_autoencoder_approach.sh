@@ -1,0 +1,1 @@
+scp -r Autoencoder_Approach hguan@deepnet.music.gatech.edu:~/Voice-Disorder-Diagnosis

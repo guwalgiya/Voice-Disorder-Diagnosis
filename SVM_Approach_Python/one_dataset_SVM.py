@@ -109,7 +109,7 @@ for train_validate_index, test_index in kf_spliter.split(index_array):
          
 
         # ==============================================================================
-        train_package    = loadMFCCs(train_combo, classes, dsp_package, dataset_path, data,    True,  aug_dict)
+        train_package    = loadMFCCs(train_combo,    classes, dsp_package, dataset_path, data, True,  aug_dict)
         validate_package = loadMFCCs(validate_combo, classes, dsp_package, dataset_path, data, False, unaug_dict)
 
         train_data,    _,  _, train_label_3,    train_dist,    _                       = train_package
