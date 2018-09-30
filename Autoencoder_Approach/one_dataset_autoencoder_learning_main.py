@@ -3,15 +3,16 @@
 import matplotlib
 matplotlib.use('Agg')
 import getCombination
-from   matplotlib              import pyplot             as plt
-from   keras                   import backend            as K
-from   sklearn.model_selection import KFold
-from   keras.models            import load_model
-from   loadMelSpectrogram      import loadMelSpectrogram
-from   loadMFCCs               import loadMFCCs
-from   keras.models            import Model
-import numpy                   as     np
-import tensorflow              as     tf
+from   matplotlib                import pyplot             as plt
+from   keras                     import backend            as K
+from   sklearn.model_selection   import KFold
+from   sklearn.feature_selection import SelectKBest, chi2
+from   keras.models              import load_model
+from   loadMelSpectrogram        import loadMelSpectrogram
+from   loadMFCCs                 import loadMFCCs
+from   keras.models              import Model
+import numpy                     as     np
+import tensorflow                as     tf
 import math
 import dataSplit
 import autoencoder
@@ -49,8 +50,8 @@ input_name          = "MelSpectrogram"
 # =============================================================================
 # Autoencoder Initialization
 encoding_dimension = 128
-encoder_layer      = 5
-decoder_layer      = 5
+encoder_layer      = 3
+decoder_layer      = 3
 epoch_limit        = 100000
 batch_auto         = 1024
 shuffle_choice     = True
@@ -135,31 +136,39 @@ for fold_index in range(num_folds):
     print(validate_dist)
     print(test_dist)
 
-
+    
     # =============================================================================
     _, history, encodeLayer_index = autoencoder.main(input_vector_length, train_data, validate_data, arch_bundle, train_bundle_auto)
     best_autoencoder              = load_model(best_model_name)
     best_encoder                  = Model(inputs  = best_autoencoder.inputs, outputs = best_autoencoder.layers[encodeLayer_index].output)
     
 
-    # ==============================================================================
+    # ===============================================================================
     # save the plot of validation loss
     plt.plot(history.history[monitor])
     plt.savefig(val_loss_plot_name + str(fold_index + 1) + ".png")
     plt.clf()
 
 
-    # =============================================================================
+    # ===============================================================================
     train_data_encoded     = best_encoder.predict(train_data)
     validate_data_encoded  = best_encoder.predict(validate_data)
     test_data_encoded      = best_encoder.predict(test_data)
 
 
-    # =============================================================================
-    fold_result_package  = mySVM.method1(train_data_encoded,    train_label3, 
-                                         validate_data_encoded, validate_label3, 
-                                         test_data_encoded,     test_label3,
-                                         test_combo,            test_augment_amount)
+    # ===============================================================================
+    selector               = SelectKBest(chi2, k = 20).fit(train_data_encoded, train_label3)
+    train_data_selected    = selector.transform(train_data_encoded)
+    validate_data_selected = selector.transform(validate_data_encoded)
+    test_data_selected     = selector.transform(test_data_encoded)
+    print(train_data_selected.shape, validate_data_selected.shape, test_data_selected.shape)
+
+
+    # ===============================================================================
+    fold_result_package  = mySVM.method1(train_data_selected,    train_label3, 
+                                         validate_data_selected, validate_label3, 
+                                         test_data_selected,     test_label3,
+                                         test_combo,             test_augment_amount)
     
     
     # =============================================================================
@@ -175,7 +184,7 @@ for fold_index in range(num_folds):
     snippet_results.append(snippet_acc)
     
     
-    # ==============================================================================
+    # =============================================================================
     K.clear_session()
     tf.reset_default_graph()
     os.remove("best_model_this_fold.hdf5")

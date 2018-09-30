@@ -1,1 +1,0 @@
-def splitAutoencoder(autoencoder, input_vector_length, encoding_dimension)

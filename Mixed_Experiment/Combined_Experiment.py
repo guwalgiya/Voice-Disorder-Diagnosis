@@ -1,23 +1,22 @@
 # =============================================================================
 # Import Packages
-import matplotlib
-matplotlib.use('Agg')
-import getCombination
-from   matplotlib              import pyplot             as plt
 from   keras                   import backend            as K
 from   sklearn.model_selection import KFold
 from   keras.models            import load_model
 from   loadMelSpectrogram      import loadMelSpectrogram
 from   loadMFCCs               import loadMFCCs
 from   keras.models            import Model
+from   math                    import ceil
 import numpy                   as     np
 import tensorflow              as     tf
-import math
+import getCombination
 import dataSplit
 import autoencoder
 import mySVM
 import pickle
+import CNN
 import os
+
 
 # =============================================================================
 # Dataset Initialization
@@ -25,12 +24,13 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 classes            = ["Normal", "Pathol"]
 dataset_name       = "KayPentax"
 dataset_path       = "/home/hguan/7100-Master-Project/Dataset-" + dataset_name
-num_folds          = 5   
-train_percent      = 90
-num_MFCCs          = 20
 best_model_name    = "best_model_this_fold.hdf5"
 val_loss_plot_name = "Val_Loss_Plot_"
 monitor            = "val_loss"
+num_folds          = 5   
+train_percent      = 90
+num_MFCCs          = 20
+batch_size         = 1024
 
 
 # =============================================================================
@@ -42,18 +42,21 @@ fft_length          = 512
 fft_hop             = 128
 mel_length          = 128
 dsp_package_1       = [fs, snippet_length, snippet_hop, fft_length, fft_hop, mel_length]
-input_vector_length = mel_length * math.ceil(snippet_length / 1000 * fs / fft_hop)
+input_vector_length = mel_length * ceil(snippet_length / 1000 * fs / fft_hop)
 vector_length       = 128
 input_name_1        = "MelSpectrogram"
 input_name_2        = "MFCCs"
 dsp_package_2       = [fs, snippet_length, snippet_hop, fft_length, fft_hop, num_MFCCs * 2]
+num_channel         = 1
+num_rows            = 128
+input_shape         = (int(num_rows / num_channel), ceil(snippet_length / 1000 * fs / fft_hop), num_channel)
 
 # =============================================================================
 # Autoencoder Initialization
 encoding_dimension = 64
 encoder_layer      = 6
 decoder_layer      = 6
-epoch_limit        = 100000
+epoch_limit        = 10
 batch_auto         = 512
 shuffle_choice     = True
 loss_function      = 'mean_squared_error'
@@ -134,41 +137,69 @@ for fold_index in range(num_folds):
     
 
     # =============================================================================
-    train_data,    _,  _, train_label3,    train_dist,    _                       = train_package
-    validate_data, _,  _, validate_label3, validate_dist, validate_augment_amount = validate_package
-    test_data,     _,  _, test_label3,     test_dist,     test_augment_amount     = test_package
+    train_data,    train_label_1,     _, train_label_3,    train_dist,    _                       = train_package
+    validate_data, validate_label_1,  _, validate_label_3, validate_dist, validate_augment_amount = validate_package
+    test_data,     test_label_1,      _, test_label_3,     test_dist,     test_augment_amount     = test_package
     print(train_dist)
     print(validate_dist)
     print(test_dist)
 
 
     # =============================================================================
-    _, history, encodeLayer_index = autoencoder.main(input_vector_length, train_data, validate_data, arch_bundle, train_bundle_auto)
+    train_data_auto    = train_data.reshape((len(train_data),       np.prod(train_data.shape[1:])),    order = 'F') 
+    validate_data_auto = validate_data.reshape((len(validate_data), np.prod(validate_data.shape[1:])), order = 'F')
+    test_data_auto     = test_data.reshape((len(test_data),         np.prod(test_data.shape[1:])),     order = 'F') 
+
+
+    # =============================================================================
+    _, history, encodeLayer_index = autoencoder.main(input_vector_length, train_data_auto, validate_data_auto, arch_bundle, train_bundle_auto)
     best_autoencoder              = load_model(best_model_name)
     if fold_index == 0:
         print(best_autoencoder.summary())
     best_encoder                  = Model(inputs  = best_autoencoder.inputs, outputs = best_autoencoder.layers[encodeLayer_index].output)
     
-
-    # ==============================================================================
-    # save the plot of validation loss
-    plt.plot(history.history[monitor])
-    plt.savefig(val_loss_plot_name + str(fold_index + 1) + ".png")
-    plt.clf()
-
   
     # =============================================================================
     train_data_encoded     = best_encoder.predict(train_data)
     validate_data_encoded  = best_encoder.predict(validate_data)
     test_data_encoded      = best_encoder.predict(test_data)
+    
+
+    # ==============================================================================
+    train_data_CNN    = train_data.reshape(train_data.shape[0],       num_channel, int(train_data.shape[2]    / num_channel), train_data.shape[3])   
+    validate_data_CNN = validate_data.reshape(validate_data.shape[0], num_channel, int(validate_data.shape[2] / num_channel), validate_data.shape[3]) 
+    test_data_CNN     = test_data.reshape(test_data.shape[0],         num_channel, int(test_data.shape[2]     / num_channel), test_data.shape[3]) 
+    
+
+    # ==============================================================================
+    train_data_CNN    = np.moveaxis(train_data_CNN,    1, -1)
+    validate_data_CNN = np.moveaxis(validate_data_CNN, 1, -1)
+    test_data_CNN     = np.moveaxis(test_data_CNN,     1, -1)
+
+
+    # ==============================================================================
+    _, history = CNN.main(train_data_CNN, train_label_1, validate_data_CNN, validate_label_1, epoch_limit, batch_size, input_shape, monitor)
+    best_CNN   = load_model(best_model_name)
+    extractor  = Model(inputs = best_CNN.inputs, outputs = best_CNN.layers[-2].outputs)
+    
+
+    # ==============================================================================
+    train_data_CNNed    = extractor.predict(train_data_CNN)
+    validate_data_CNNed = extractor.predict(validate_data_CNN)
+    test_data_CNNed     = extractor.predict(test_data_CNN)
+
 
     # ==============================================================================
     train_package    = loadMFCCs(train_combo,    classes, dsp_package_2, dataset_path, MFCCs_data, True,  aug_dict)
     validate_package = loadMFCCs(validate_combo, classes, dsp_package_2, dataset_path, MFCCs_data, False, unaug_dict)
     test_package     = loadMFCCs(test_combo,     classes, dsp_package_2, dataset_path, MFCCs_data, False, unaug_dict)
-    train_data,    _,  _, _,  train_dist,    _ = train_package
-    validate_data, _,  _, _,  validate_dist, _ = validate_package
-    test_data,     _,  _, _,  test_dist,     _ = test_package
+    
+   
+    # ==============================================================================
+    train_data,    _,  _, _, _, _ = train_package
+    validate_data, _,  _, _, _, _ = validate_package
+    test_data,     _,  _, _, _, _ = test_package
+
 
     # =============================================================================
     train_MFCCs_normalized    = np.zeros((train_data.shape))
@@ -198,21 +229,24 @@ for fold_index in range(num_folds):
     for i in range(num_MFCCs * 2):
         test_MFCCs_normalized[:, i]    = (test_data[:, i]    - standard_min_list[i]) / (standard_max_list[i] - standard_min_list[i])
         test_MFCCs_normalized[:, i]    = np.clip(test_MFCCs_normalized[:, i], 0, 1)
+    
 
+    # ==============================================================================
     print(train_data_encoded.shape)
+    print(train_data_CNNed.shape)
     print(train_MFCCs_normalized.shape)
     
-    
+   
     # ==============================================================================
-    train_features    = np.concatenate((train_data_encoded,    train_MFCCs_normalized),    axis = 1)
-    validate_features = np.concatenate((validate_data_encoded, validate_MFCCs_normalized), axis = 1)
-    test_features     = np.concatenate((test_data_encoded,     test_MFCCs_normalized),     axis = 1)
+    train_features    = np.concatenate((train_data_encoded,    train_data_CNNed,    train_MFCCs_normalized),    axis = 1)
+    validate_features = np.concatenate((validate_data_encoded, validate_data_CNNed, validate_MFCCs_normalized), axis = 1)
+    test_features     = np.concatenate((test_data_encoded,     test_data_CNNed,     test_MFCCs_normalized),     axis = 1)
 
 
     # =============================================================================
-    fold_result_package  = mySVM.method1(train_features,    train_label3, 
-                                         validate_features, validate_label3, 
-                                         test_features,     test_label3,
+    fold_result_package  = mySVM.method1(train_features,    train_label_3, 
+                                         validate_features, validate_label_3, 
+                                         test_features,     test_label_3,
                                          test_combo,        test_augment_amount)
     
     
