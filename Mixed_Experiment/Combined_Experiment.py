@@ -53,10 +53,10 @@ input_shape         = (int(num_rows / num_channel), ceil(snippet_length / 1000 *
 
 # =============================================================================
 # Autoencoder Initialization
-encoding_dimension = 64
-encoder_layer      = 6
-decoder_layer      = 6
-epoch_limit        = 10
+encoding_dimension = 32
+encoder_layer      = 3
+decoder_layer      = 3
+epoch_limit        = 1000000
 batch_auto         = 512
 shuffle_choice     = True
 loss_function      = 'mean_squared_error'
@@ -154,21 +154,19 @@ for fold_index in range(num_folds):
     # =============================================================================
     _, history, encodeLayer_index = autoencoder.main(input_vector_length, train_data_auto, validate_data_auto, arch_bundle, train_bundle_auto)
     best_autoencoder              = load_model(best_model_name)
-    if fold_index == 0:
-        print(best_autoencoder.summary())
     best_encoder                  = Model(inputs  = best_autoencoder.inputs, outputs = best_autoencoder.layers[encodeLayer_index].output)
     
   
     # =============================================================================
-    train_data_encoded     = best_encoder.predict(train_data)
-    validate_data_encoded  = best_encoder.predict(validate_data)
-    test_data_encoded      = best_encoder.predict(test_data)
+    train_data_encoded     = best_encoder.predict(train_data_auto)
+    validate_data_encoded  = best_encoder.predict(validate_data_auto)
+    test_data_encoded      = best_encoder.predict(test_data_auto)
     
 
     # ==============================================================================
-    train_data_CNN    = train_data.reshape(train_data.shape[0],       num_channel, int(train_data.shape[2]    / num_channel), train_data.shape[3])   
-    validate_data_CNN = validate_data.reshape(validate_data.shape[0], num_channel, int(validate_data.shape[2] / num_channel), validate_data.shape[3]) 
-    test_data_CNN     = test_data.reshape(test_data.shape[0],         num_channel, int(test_data.shape[2]     / num_channel), test_data.shape[3]) 
+    train_data_CNN    = train_data.reshape(train_data.shape[0],       num_channel, int(train_data.shape[1]    / num_channel), train_data.shape[2])   
+    validate_data_CNN = validate_data.reshape(validate_data.shape[0], num_channel, int(validate_data.shape[1] / num_channel), validate_data.shape[2]) 
+    test_data_CNN     = test_data.reshape(test_data.shape[0],         num_channel, int(test_data.shape[1]     / num_channel), test_data.shape[2]) 
     
 
     # ==============================================================================
@@ -180,7 +178,7 @@ for fold_index in range(num_folds):
     # ==============================================================================
     _, history = CNN.main(train_data_CNN, train_label_1, validate_data_CNN, validate_label_1, epoch_limit, batch_size, input_shape, monitor)
     best_CNN   = load_model(best_model_name)
-    extractor  = Model(inputs = best_CNN.inputs, outputs = best_CNN.layers[-2].outputs)
+    extractor  = Model(inputs  = best_CNN.input, outputs = best_CNN.layers[-2].output)
     
 
     # ==============================================================================
