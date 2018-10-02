@@ -27,7 +27,7 @@ def main(train_data, train_label, validate_data, validate_label, epoch_limit, ba
     CNN.add(Flatten())
     CNN.add(Dense(1024, activation = 'relu'))
     CNN.add(Dense(1024, activation = 'relu'))
-    #CNN.add(Dense(1024, activation = 'relu'))
+    CNN.add(Dense(1024, activation = 'relu'))
     CNN.add(Dense(32,   activation = 'relu'))
     CNN.add(Dense(1,    activation = 'sigmoid'))
 
@@ -58,7 +58,7 @@ def main(train_data, train_label, validate_data, validate_label, epoch_limit, ba
                     batch_size      = batch_size,
                     epochs          = epoch_limit,
                     callbacks       = [early_stopping, model_checkpoint],
-                    #class_weight    = train_class_weight,
+                    class_weight    = train_class_weight,
                     validation_data = (validate_data, validate_label),
                     verbose         = 0,
                     shuffle         = True)

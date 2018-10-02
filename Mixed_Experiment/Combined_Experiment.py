@@ -56,7 +56,7 @@ input_shape         = (int(num_rows / num_channel), ceil(snippet_length / 1000 *
 encoding_dimension = 32
 encoder_layer      = 3
 decoder_layer      = 3
-epoch_limit        = 1000000
+epoch_limit        = 100000
 batch_auto         = 512
 shuffle_choice     = True
 loss_function      = 'mean_squared_error'
@@ -134,7 +134,6 @@ for fold_index in range(num_folds):
     train_package     = loadMelSpectrogram(train_combo,    classes, dsp_package_1, dataset_path, melSpec_data, True,  aug_dict)   
     validate_package  = loadMelSpectrogram(validate_combo, classes, dsp_package_1, dataset_path, melSpec_data, False, unaug_dict)   
     test_package      = loadMelSpectrogram(test_combo,     classes, dsp_package_1, dataset_path, melSpec_data, False, unaug_dict)
-    
 
     # =============================================================================
     train_data,    train_label_1,     _, train_label_3,    train_dist,    _                       = train_package
@@ -236,9 +235,9 @@ for fold_index in range(num_folds):
     
    
     # ==============================================================================
-    train_features    = np.concatenate((train_data_encoded,    train_data_CNNed,    train_MFCCs_normalized),    axis = 1)
-    validate_features = np.concatenate((validate_data_encoded, validate_data_CNNed, validate_MFCCs_normalized), axis = 1)
-    test_features     = np.concatenate((test_data_encoded,     test_data_CNNed,     test_MFCCs_normalized),     axis = 1)
+    train_features    = np.concatenate((train_MFCCs_normalized,    train_data_encoded), axis = 1)    #train_MFCCs_normalized),    axis = 1)
+    validate_features = np.concatenate((validate_MFCCs_normalized, validate_data_encoded), axis = 1) #validate_MFCCs_normalized), axis = 1)
+    test_features     = np.concatenate((test_MFCCs_normalized,     test_data_encoded), axis = 1)     #test_MFCCs_normalized),     axis = 1)
 
 
     # =============================================================================
