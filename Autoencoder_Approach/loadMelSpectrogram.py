@@ -6,7 +6,7 @@ import math
 def loadMelSpectrogram(selected_combo, classes, dsp_package, dataset_path, data, augmented, snippet_dict):
 
     # =============================================================================
-    fs, snippet_length, snippet_hop, fft_length, fft_hop, mel_length = dsp_package
+    fs, snippet_length, snippet_hop, fft_length, fft_hop, num_rows = dsp_package
     label_1, label_2, label_3, snippet_num_list, distribution        = [], [], [], [], {}
     
     # =============================================================================
@@ -38,7 +38,7 @@ def loadMelSpectrogram(selected_combo, classes, dsp_package, dataset_path, data,
     
     # =============================================================================   
     num_time_frame = math.ceil(snippet_length / 1000 * fs / fft_hop)
-    loaded_data    = np.zeros((sum(snippet_num_list), mel_length, num_time_frame))
+    loaded_data    = np.zeros((sum(snippet_num_list), num_rows, num_time_frame))
 
 
     # =============================================================================
@@ -58,12 +58,12 @@ def loadMelSpectrogram(selected_combo, classes, dsp_package, dataset_path, data,
             
         # =============================================================================
         for i in np.arange(start_index, end_index):
-            loaded_data[i] = melSpectrograms[i - start_index]
-            loaded_data[i] = loaded_data[i] / loaded_data[i].max()
-
+            S              = melSpectrograms[i - start_index]
+            #S              = loaded_data[i] / loaded_data[i].max()
+            loaded_data[i] = librosa.feature.mfcc(S = librosa.power_to_db(S), n_mfcc = 20)
         start_index  = start_index + snippet_dict[original_file_name][0] 
 
     # =============================================================================
-    loaded_data = loaded_data.reshape((len(loaded_data), np.prod(loaded_data.shape[1:])), order = 'F')      
+    #loaded_data = loaded_data.reshape((len(loaded_data), np.prod(loaded_data.shape[1:])), order = 'F')      
 
     return [loaded_data, label_1, label_2, label_3, distribution, snippet_num_list]

@@ -20,6 +20,10 @@ import mySVM
 import pickle
 import os
 
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.4)
+
+sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+
 # =============================================================================
 # Dataset Initialization
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -41,9 +45,11 @@ snippet_hop         = 100   #in ms
 fft_length          = 512
 fft_hop             = 128
 mel_length          = 128
-dsp_package         = [fs, snippet_length, snippet_hop, fft_length, fft_hop, mel_length]
-input_vector_length = mel_length * math.ceil(snippet_length / 1000 * fs / fft_hop)
-vector_length       = 128
+num_MFCCs           = 20
+num_row             = num_MFCCs
+dsp_package         = [fs, snippet_length, snippet_hop, fft_length, fft_hop, num_row]
+#input_vector_length = mel_length * math.ceil(snippet_length / 1000 * fs / fft_hop)
+input_vector_length = num_row * math.ceil(snippet_length / 1000 * fs / fft_hop)
 input_name          = "MelSpectrogram"
 
 
@@ -52,7 +58,7 @@ input_name          = "MelSpectrogram"
 encoding_dimension = 128
 encoder_layer      = 3
 decoder_layer      = 3
-epoch_limit        = 100000
+epoch_limit        = 10000000
 batch_auto         = 1024
 shuffle_choice     = True
 loss_function      = 'mean_squared_error'
@@ -132,16 +138,31 @@ for fold_index in range(num_folds):
     train_data,    _,  _, train_label3,    train_dist,    _                       = train_package
     validate_data, _,  _, validate_label3, validate_dist, validate_augment_amount = validate_package
     test_data,     _,  _, test_label3,     test_dist,     test_augment_amount     = test_package
-    print(train_dist)
-    print(validate_dist)
-    print(test_dist)
-
+    # print(train_dist)
+    # print(validate_dist)
+    # print(test_dist)
     
+    for i in range(num_row):
+
+        max_standard           = max(np.amax(train_data[:, i, :]), np.amax(validate_data[:, i, :]))
+        min_standard           = min(np.amin(train_data[:, i, :]), np.amin(validate_data[:, i, :]))
+        
+        train_data[:, i, :]    = (train_data[:, i, :]    - min_standard) / (max_standard - min_standard)
+        validate_data[:, i, :] = (validate_data[:, i, :] - min_standard) / (max_standard - min_standard)
+        test_data[:, i, :]     = (test_data[:, i, :]     - min_standard) / (max_standard - min_standard)
+        test_data[:, i, :]     = np.clip(test_data[:, i, :], 0, 1)
+    
+    # =============================================================================
+    train_data    = train_data.reshape((len(train_data),       np.prod(train_data.shape[1:])),    order = 'F') 
+    validate_data = validate_data.reshape((len(validate_data), np.prod(validate_data.shape[1:])), order = 'F')
+    test_data     = test_data.reshape((len(test_data),         np.prod(test_data.shape[1:])),     order = 'F')
+
+
     # =============================================================================
     _, history, encodeLayer_index = autoencoder.main(input_vector_length, train_data, validate_data, arch_bundle, train_bundle_auto)
     best_autoencoder              = load_model(best_model_name)
     best_encoder                  = Model(inputs  = best_autoencoder.inputs, outputs = best_autoencoder.layers[encodeLayer_index].output)
-    
+    #print(best_encoder.summary())
 
     # ===============================================================================
     # save the plot of validation loss
@@ -156,19 +177,12 @@ for fold_index in range(num_folds):
     test_data_encoded      = best_encoder.predict(test_data)
 
 
-    # ===============================================================================
-    selector               = SelectKBest(chi2, k = 20).fit(train_data_encoded, train_label3)
-    train_data_selected    = selector.transform(train_data_encoded)
-    validate_data_selected = selector.transform(validate_data_encoded)
-    test_data_selected     = selector.transform(test_data_encoded)
-    print(train_data_selected.shape, validate_data_selected.shape, test_data_selected.shape)
-
 
     # ===============================================================================
-    fold_result_package  = mySVM.method1(train_data_selected,    train_label3, 
-                                         validate_data_selected, validate_label3, 
-                                         test_data_selected,     test_label3,
-                                         test_combo,             test_augment_amount)
+    fold_result_package  = mySVM.method1(train_data_encoded,    train_label3, 
+                                         validate_data_encoded, validate_label3, 
+                                         test_data_encoded,     test_label3,
+                                         test_combo,            test_augment_amount)
     
     
     # =============================================================================

@@ -53,11 +53,11 @@ input_shape         = (int(num_rows / num_channel), ceil(snippet_length / 1000 *
 
 # =============================================================================
 # Autoencoder Initialization
-encoding_dimension = 32
-encoder_layer      = 3
-decoder_layer      = 3
+encoding_dimension = 128
+encoder_layer      = 5
+decoder_layer      = 5
 epoch_limit        = 100000
-batch_auto         = 512
+batch_auto         = 128
 shuffle_choice     = True
 loss_function      = 'mean_squared_error'
 arch_bundle        = [encoder_layer, encoding_dimension, decoder_layer]
@@ -106,7 +106,9 @@ MFCCs_data           = pickle.load(temp_file_2)
 aug_dict             = pickle.load(temp_file_3)
 unaug_dict           = pickle.load(temp_file_4)
 
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.4)
 
+sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 # =============================================================================
 for fold_index in range(num_folds):
     print("---> Now Fold ", fold_index + 1,  " ----------------------------")
@@ -175,75 +177,75 @@ for fold_index in range(num_folds):
 
 
     # ==============================================================================
-    _, history = CNN.main(train_data_CNN, train_label_1, validate_data_CNN, validate_label_1, epoch_limit, batch_size, input_shape, monitor)
-    best_CNN   = load_model(best_model_name)
-    extractor  = Model(inputs  = best_CNN.input, outputs = best_CNN.layers[-2].output)
+    #_, history = CNN.main(train_data_CNN, train_label_1, validate_data_CNN, validate_label_1, epoch_limit, batch_size, input_shape, monitor)
+    #best_CNN   = load_model(best_model_name)
+    #extractor  = Model(inputs  = best_CNN.input, outputs = best_CNN.layers[-2].output)
     
 
     # ==============================================================================
-    train_data_CNNed    = extractor.predict(train_data_CNN)
-    validate_data_CNNed = extractor.predict(validate_data_CNN)
-    test_data_CNNed     = extractor.predict(test_data_CNN)
+    #train_data_CNNed    = extractor.predict(train_data_CNN)
+    #validate_data_CNNed = extractor.predict(validate_data_CNN)
+    #test_data_CNNed     = extractor.predict(test_data_CNN)
 
 
     # ==============================================================================
-    train_package    = loadMFCCs(train_combo,    classes, dsp_package_2, dataset_path, MFCCs_data, True,  aug_dict)
-    validate_package = loadMFCCs(validate_combo, classes, dsp_package_2, dataset_path, MFCCs_data, False, unaug_dict)
-    test_package     = loadMFCCs(test_combo,     classes, dsp_package_2, dataset_path, MFCCs_data, False, unaug_dict)
+    #train_package    = loadMFCCs(train_combo,    classes, dsp_package_2, dataset_path, MFCCs_data, True,  aug_dict)
+    #validate_package = loadMFCCs(validate_combo, classes, dsp_package_2, dataset_path, MFCCs_data, False, unaug_dict)
+    #test_package     = loadMFCCs(test_combo,     classes, dsp_package_2, dataset_path, MFCCs_data, False, unaug_dict)
     
    
     # ==============================================================================
-    train_data,    _,  _, _, _, _ = train_package
-    validate_data, _,  _, _, _, _ = validate_package
-    test_data,     _,  _, _, _, _ = test_package
+    #train_data,    _,  _, _, _, _ = train_package
+    #validate_data, _,  _, _, _, _ = validate_package
+    #test_data,     _,  _, _, _, _ = test_package
 
 
     # =============================================================================
-    train_MFCCs_normalized    = np.zeros((train_data.shape))
-    validate_MFCCs_normalized = np.zeros((validate_data.shape))
-    test_MFCCs_normalized     = np.zeros((test_data.shape))
+    #train_MFCCs_normalized    = np.zeros((train_data.shape))
+    #validate_MFCCs_normalized = np.zeros((validate_data.shape))
+    #test_MFCCs_normalized     = np.zeros((test_data.shape))
 
 
     # =============================================================================
-    standard_max_list  = [0] * num_MFCCs * 2
-    standard_min_list  = [0] * num_MFCCs * 2
+    # standard_max_list  = [0] * num_MFCCs * 2
+    # standard_min_list  = [0] * num_MFCCs * 2
 
     
-    for i in range(num_MFCCs * 2):
+    # for i in range(num_MFCCs * 2):
 
-        # ==============================================================================
-        standard_max = max(np.amax(train_data[:, i]), np.amax(validate_data[:, i]))
-        standard_min = min(np.amin(train_data[:, i]), np.amin(validate_data[:, i]))
+    #     # ==============================================================================
+    #     standard_max = max(np.amax(train_data[:, i]), np.amax(validate_data[:, i]))
+    #     standard_min = min(np.amin(train_data[:, i]), np.amin(validate_data[:, i]))
 
-        standard_max_list[i] = round(standard_max, 3)
-        standard_min_list[i] = round(standard_min, 3)
+    #     standard_max_list[i] = round(standard_max, 3)
+    #     standard_min_list[i] = round(standard_min, 3)
            
-        train_MFCCs_normalized[:, i]    = (train_data[:, i]    - standard_min_list[i]) / (standard_max_list[i] - standard_min_list[i])
-        validate_MFCCs_normalized[:, i] = (validate_data[:, i] - standard_min_list[i]) / (standard_max_list[i] - standard_min_list[i])
+    #     train_MFCCs_normalized[:, i]    = (train_data[:, i]    - standard_min_list[i]) / (standard_max_list[i] - standard_min_list[i])
+    #     validate_MFCCs_normalized[:, i] = (validate_data[:, i] - standard_min_list[i]) / (standard_max_list[i] - standard_min_list[i])
 
     
-    # ==============================================================================
-    for i in range(num_MFCCs * 2):
-        test_MFCCs_normalized[:, i]    = (test_data[:, i]    - standard_min_list[i]) / (standard_max_list[i] - standard_min_list[i])
-        test_MFCCs_normalized[:, i]    = np.clip(test_MFCCs_normalized[:, i], 0, 1)
+    # # ==============================================================================
+    # for i in range(num_MFCCs * 2):
+    #     test_MFCCs_normalized[:, i]    = (test_data[:, i]    - standard_min_list[i]) / (standard_max_list[i] - standard_min_list[i])
+    #     test_MFCCs_normalized[:, i]    = np.clip(test_MFCCs_normalized[:, i], 0, 1)
     
 
     # ==============================================================================
     print(train_data_encoded.shape)
-    print(train_data_CNNed.shape)
-    print(train_MFCCs_normalized.shape)
+    #print(train_data_CNNed.shape)
+    #print(train_MFCCs_normalized.shape)
     
    
     # ==============================================================================
-    train_features    = np.concatenate((train_MFCCs_normalized,    train_data_encoded), axis = 1)    #train_MFCCs_normalized),    axis = 1)
-    validate_features = np.concatenate((validate_MFCCs_normalized, validate_data_encoded), axis = 1) #validate_MFCCs_normalized), axis = 1)
-    test_features     = np.concatenate((test_MFCCs_normalized,     test_data_encoded), axis = 1)     #test_MFCCs_normalized),     axis = 1)
+    #train_features    = np.concatenate((train_MFCCs_normalized,    train_data_encoded),    axis = 1)    #train_MFCCs_normalized),    axis = 1)
+    #validate_features = np.concatenate((validate_MFCCs_normalized, validate_data_encoded), axis = 1) #validate_MFCCs_normalized), axis = 1)
+    #test_features     = np.concatenate((test_MFCCs_normalized,     test_data_encoded), axis = 1)     #test_MFCCs_normalized),     axis = 1)
 
 
     # =============================================================================
-    fold_result_package  = mySVM.method1(train_features,    train_label_3, 
-                                         validate_features, validate_label_3, 
-                                         test_features,     test_label_3,
+    fold_result_package  = mySVM.method1(train_data_encoded,    train_label_3, 
+                                         validate_data_encoded, validate_label_3, 
+                                         test_data_encoded,     test_label_3,
                                          test_combo,        test_augment_amount)
     
     

@@ -21,7 +21,7 @@ def main(input_vector_length, x_train, x_validate, arch_bundle, train_bundle):
     # Encoder    
     middle_encoded = input_mel_spectrogram
     for i in range(encoder_layer):
-        output_length  = encoding_dimension * (4 ** (encoder_layer - i))
+        output_length  = encoding_dimension * (2 ** (encoder_layer - i))
         middle_encoded = Dense(output_length, kernel_initializer = 'he_normal', activation = 'relu')(middle_encoded)
         #middle_encoded = Dropout(20)(middle_encoded)
     encoded = Dense(encoding_dimension, kernel_initializer = 'he_normal', activation = 'relu')(middle_encoded)
@@ -31,7 +31,7 @@ def main(input_vector_length, x_train, x_validate, arch_bundle, train_bundle):
     # Decoded    
     middle_decoded = encoded
     for i in range(encoder_layer):
-        output_length  = encoding_dimension * (4 ** (i + 1))
+        output_length  = encoding_dimension * (2 ** (i + 1))
         middle_decoded = Dense(output_length, kernel_initializer = 'he_normal', activation = 'relu')(middle_decoded)    
         #middle_decoded = Dropout(20)(middle_decoded)  
     decoded = Dense(input_vector_length, kernel_initializer = 'he_normal', activation = 'relu')(middle_decoded)
