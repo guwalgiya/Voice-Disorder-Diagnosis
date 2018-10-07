@@ -23,8 +23,7 @@ def main(input_vector_length, x_train, x_validate, arch_bundle, train_bundle):
     middle_encoded = input_mel_spectrogram
     for i in range(encoder_layer):
         output_length  = encoding_dimension * (2 ** (encoder_layer - i))
-        middle_encoded = Dense(output_length, kernel_initializer = 'he_normal', activation = 'relu',
-                               activity_regularizer = regularizers.l1(10e-5))(middle_encoded)
+        middle_encoded = Dense(output_length, kernel_initializer = 'he_normal', activation = 'relu')(middle_encoded)
     encoded = Dense(encoding_dimension, kernel_initializer = 'he_normal', activation = 'relu')(middle_encoded)
     
 
@@ -33,8 +32,7 @@ def main(input_vector_length, x_train, x_validate, arch_bundle, train_bundle):
     middle_decoded = encoded
     for i in range(encoder_layer):
         output_length  = encoding_dimension * (2 ** (i + 1))
-        middle_decoded = Dense(output_length, kernel_initializer = 'he_normal', activation = 'relu',
-                               )(middle_decoded)    
+        middle_decoded = Dense(output_length, kernel_initializer = 'he_normal', activation = 'relu')(middle_decoded)    
     decoded = Dense(input_vector_length, kernel_initializer = 'he_normal', activation = 'relu')(middle_decoded)
  
     
@@ -48,7 +46,7 @@ def main(input_vector_length, x_train, x_validate, arch_bundle, train_bundle):
     
 
     # =============================================================================
-    early_stopping = EarlyStopping(monitor = 'val_loss', patience = 10, verbose = 0, min_delta = 0.0001, mode = 'min')
+    early_stopping = EarlyStopping(monitor = 'val_loss', patience = 50, verbose = 0, min_delta = 0.00001, mode = 'min')
     
 
     # =============================================================================
