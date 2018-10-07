@@ -9,7 +9,7 @@ fs = 25000
 new_fs = 16000
 cut_length = 500 #must be in mili-seconds
 hopsizeInms = 100 #must be in mili-seconds
-parent_folder = "/home/hguan/7100-Master-Project/Dataset-KayPentax"
+parent_folder = "/home/hguan/7100-Master-Project/Dataset-Spanish"
 vocal_types = ["Normal", "Pathol"]
 # =============================================================================
 

@@ -42,11 +42,11 @@ def main(input_vector_length, x_train, x_validate, arch_bundle, train_bundle):
 
 
     # =============================================================================
-    autoencoder.compile(optimizer = Adam(lr = 0.0001, beta_1 = 0.9, beta_2 = 0.999), loss = loss_function)
+    autoencoder.compile(optimizer = Adam(lr = 0.001, beta_1 = 0.9, beta_2 = 0.999), loss = loss_function)
     
 
     # =============================================================================
-    early_stopping = EarlyStopping(monitor = 'val_loss', patience = 50, verbose = 0, min_delta = 0.00001, mode = 'min')
+    early_stopping = EarlyStopping(monitor = 'val_loss', patience = 30, verbose = 0, min_delta = 0.00001, mode = 'min')
     
 
     # =============================================================================

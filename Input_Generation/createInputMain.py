@@ -54,11 +54,11 @@ def os_choose():
         os = input("Choose Operating System: Linux = 1, Windows = 2 ")
         if int(os)            == 1:
             slash              = "/"
-            dataset_main_path  = "/home/hguan/7100-Master-Project/Dataset-KayPentax"
+            dataset_main_path  = "/home/hguan/7100-Master-Project/Dataset-Spanish"
             correct_input      = True
         elif int(os)          == 2:
             slash              = "\\"
-            dataset_main_path  = "C:\\Music Technology Master\\7100 - Master Project\\Dataset - KayPentax"
+            dataset_main_path  = "C:\\Music Technology Master\\7100 - Master Project\\Dataset - Spanish"
             correct_input      = True
         else:
             pass
