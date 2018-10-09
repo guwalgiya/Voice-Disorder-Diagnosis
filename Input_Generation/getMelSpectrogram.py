@@ -30,15 +30,15 @@ def main(dataset_main_path, name_class_combo, fs, snippet_length, snippet_hop, b
         print('---------------------------------------------')
         print(len(snippet_names), " vs ", len(exsited_snippet))
         if len(snippet_names) == len(exsited_snippet):
-        	print(a_combo[0], "'s spectrogram is already done", j)
+            print(a_combo[0], "'s spectrogram is already done", j)
         else:
-	        for a_snippet_name in snippet_names:
-	            a_snippet_path = snippet_path + "/" + a_snippet_name
-	            x, _ = librosa.load(a_snippet_path, sr = fs)
-	            S = librosa.feature.melspectrogram(y = x, sr = fs, n_fft = block_size, hop_length = hop_size, n_mels = mel_length)
-	            #S = S / S.max()
-	            np.savetxt(save_path +"/" +  a_snippet_name[0:-4] + '.txt', S, fmt='%10.5f')
-                print(a_combo[0], "'s spectrogram is done", j)
+            for a_snippet_name in snippet_names:
+                a_snippet_path = snippet_path + "/" + a_snippet_name
+                x, _ = librosa.load(a_snippet_path, sr = fs)
+                S = librosa.feature.melspectrogram(y = x, sr = fs, n_fft = block_size, hop_length = hop_size, n_mels = mel_length)
+                #S = S / S.max()
+                np.savetxt(save_path +"/" +  a_snippet_name[0:-4] + '.txt', S, fmt='%10.5f')
+            print(a_combo[0], "'s spectrogram is done", j)
         
         j = j + 1
         

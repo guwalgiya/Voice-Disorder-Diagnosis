@@ -23,7 +23,7 @@ from   math                    import ceil
 # =============================================================================
 # Environment Setup
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-dataset_path                       = "/home/hguan/7100-Master-Project/Dataset-KayPentax"
+dataset_path                       = "/home/hguan/7100-Master-Project/Dataset-Spanish"
 slash                              = "/"
 #dataset_path                      = "C:\\Master Degree\\7100 - Master Project\\Dataset - KayPentax"
 #slash                             = "\\"
@@ -147,15 +147,15 @@ for fold_num in range(num_folds):
     test_data,     test_label_1,     _, test_label_3,     test_dist,     test_augment_amount = test_package
 
     
-    for i in range(num_rows):
+    # for i in range(num_rows):
 
-        max_standard           = max(np.amax(train_data[:, :, i, :]), np.amax(validate_data[:, :, i, :]))
-        min_standard           = min(np.amin(train_data[:, :, i, :]), np.amin(validate_data[:, :, i, :]))
+    #     max_standard           = max(np.amax(train_data[:, :, i, :]), np.amax(validate_data[:, :, i, :]))
+    #     min_standard           = min(np.amin(train_data[:, :, i, :]), np.amin(validate_data[:, :, i, :]))
         
-        train_data[:, :, i, :]    = (train_data[:, :, i, :]    - min_standard) / (max_standard - min_standard)
-        validate_data[:, :, i, :] = (validate_data[:, :, i, :] - min_standard) / (max_standard - min_standard)
-        test_data[:, :, i, :]     = (test_data[:, :, i, :]     - min_standard) / (max_standard - min_standard)
-        test_data[:, :, i, :]     = np.clip(test_data[:, :, i, :], 0, 1)
+    #     train_data[:, :, i, :]    = (train_data[:, :, i, :]    - min_standard) / (max_standard - min_standard)
+    #     validate_data[:, :, i, :] = (validate_data[:, :, i, :] - min_standard) / (max_standard - min_standard)
+    #     test_data[:, :, i, :]     = (test_data[:, :, i, :]     - min_standard) / (max_standard - min_standard)
+    #     test_data[:, :, i, :]     = np.clip(test_data[:, :, i, :], 0, 1)
     
 
     # ==============================================================================
@@ -170,7 +170,7 @@ for fold_num in range(num_folds):
 
 
     # ==============================================================================
-    _, history = CNN.main(train_data, train_label_1, test_data, test_label_1, epoch_limit, batch_size, input_shape, monitor)
+    _, history = CNN.main(train_data, train_label_1, validate_data, validate_label_1, epoch_limit, batch_size, input_shape, monitor)
     best_CNN   = load_model(best_model_name)
     extractor  = Model(inputs = best_CNN.input, outputs = best_CNN.layers[-2].output)
 
@@ -181,34 +181,34 @@ for fold_num in range(num_folds):
     plt.clf()
 
     # ==============================================================================
-    # cur_result_package = resultsAnalysis(best_CNN, test_combo, test_data, test_label_1, test_augment_amount, classes)
-    # cur_file_acc, cur_snippet_acc, cur_file_con_mat, cur_snippet_con_mat = cur_result_package
-    # print('----------------------------')
-    # print(cur_file_acc)
-    # print(cur_snippet_acc)
-    # print(cur_file_con_mat)
-    # print(cur_snippet_con_mat)
-    
-    # =============================================================================
-    train_data_CNNed    = extractor.predict(train_data)
-    validate_data_CNNed = extractor.predict(validate_data)
-    test_data_CNNed     = extractor.predict(test_data)
-
-
-    # =============================================================================
-    fold_result_package  = mySVM.method1(train_data_CNNed,    train_label_3, 
-                                         validate_data_CNNed, validate_label_3, 
-                                         test_data_CNNed,     test_label_3,
-                                         test_combo,          test_augment_amount)
-    
-
-    # =============================================================================
-    cur_file_acc, cur_file_con_mat, cur_snippet_acc, cur_snippet_con_mat = fold_result_package
+    cur_result_package = resultsAnalysis(best_CNN, test_combo, test_data, test_label_1, test_augment_amount, classes)
+    cur_file_acc, cur_snippet_acc, cur_file_con_mat, cur_snippet_con_mat = cur_result_package
     print('----------------------------')
     print(cur_file_acc)
     print(cur_snippet_acc)
     print(cur_file_con_mat)
     print(cur_snippet_con_mat)
+    
+    # # =============================================================================
+    # train_data_CNNed    = extractor.predict(train_data)
+    # validate_data_CNNed = extractor.predict(validate_data)
+    # test_data_CNNed     = extractor.predict(test_data)
+
+
+    # # =============================================================================
+    # fold_result_package  = mySVM.method1(train_data_CNNed,    train_label_3, 
+    #                                      validate_data_CNNed, validate_label_3, 
+    #                                      test_data_CNNed,     test_label_3,
+    #                                      test_combo,          test_augment_amount)
+    
+
+    # # =============================================================================
+    # cur_file_acc, cur_file_con_mat, cur_snippet_acc, cur_snippet_con_mat = fold_result_package
+    # print('----------------------------')
+    # print(cur_file_acc)
+    # print(cur_snippet_acc)
+    # print(cur_file_con_mat)
+    # print(cur_snippet_con_mat)
 
     # =============================================================================
     file_results.append(cur_file_acc)

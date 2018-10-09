@@ -32,8 +32,8 @@ def melSpectrogram():
     mel_length                                        = para_values[2]
     name_class_combo                                  = getCombination.main(dataset_main_path, classes, slash)
 
-    getMFCCs.main(dataset_main_path, name_class_combo, fs, snippet_length, snippet_hop, block_size, hop_size)
-    getMFCCs_for_unaugmented.main(dataset_main_path, name_class_combo, fs, snippet_length, snippet_hop, block_size, hop_size)
+    #getMFCCs.main(dataset_main_path, name_class_combo, fs, snippet_length, snippet_hop, block_size, hop_size)
+    #getMFCCs_for_unaugmented.main(dataset_main_path, name_class_combo, fs, snippet_length, snippet_hop, block_size, hop_size)
     getMelSpectrogram.main(dataset_main_path, name_class_combo, fs, snippet_length, snippet_hop, block_size, hop_size, mel_length)
     getMelSpectrogram_for_unaugmented.main(dataset_main_path, name_class_combo, fs, snippet_length, snippet_hop, block_size, hop_size, mel_length)
 

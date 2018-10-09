@@ -20,9 +20,9 @@ import mySVM
 import pickle
 import os
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.4)
+#gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.4)
 
-sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+#sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
 # =============================================================================
 # Dataset Initialization
@@ -138,20 +138,26 @@ for fold_index in range(num_folds):
     train_data,    _,  _, train_label3,    train_dist,    _                       = train_package
     validate_data, _,  _, validate_label3, validate_dist, validate_augment_amount = validate_package
     test_data,     _,  _, test_label3,     test_dist,     test_augment_amount     = test_package
-    # print(train_dist)
-    # print(validate_dist)
-    # print(test_dist)
+    print(train_dist)
+    print(validate_dist)
+    print(test_dist)
     
     for i in range(num_row):
 
-        max_standard           = max(np.amax(train_data[:, i, :]), np.amax(validate_data[:, i, :]))
-        min_standard           = min(np.amin(train_data[:, i, :]), np.amin(validate_data[:, i, :]))
+        #max_standard           = max(np.amax(train_data[:, i, :]), np.amax(validate_data[:, i, :]))
+        #min_standard           = min(np.amin(train_data[:, i, :]), np.amin(validate_data[:, i, :]))
         
-        train_data[:, i, :]    = (train_data[:, i, :]    - min_standard) / (max_standard - min_standard)
-        validate_data[:, i, :] = (validate_data[:, i, :] - min_standard) / (max_standard - min_standard)
-        test_data[:, i, :]     = (test_data[:, i, :]     - min_standard) / (max_standard - min_standard)
-        test_data[:, i, :]     = np.clip(test_data[:, i, :], 0, 1)
-    
+        #train_data[:, i, :]    = (train_data[:, i, :]    - min_standard) / (max_standard - min_standard) 
+        #validate_data[:, i, :] = (validate_data[:, i, :] - min_standard) / (max_standard - min_standard) 
+        #test_data[:, i, :]     = (test_data[:, i, :]     - min_standard) / (max_standard - min_standard) 
+        #test_data[:, i, :]     = np.clip(test_data[:, i, :], 0, 1)
+        mean                    = np.mean(train_data[:, i, :].flatten().tolist() + validate_data[:, i, :].flatten().tolist())
+        std                     = np.std(train_data[:, i, :].flatten().tolist()  + validate_data[:, i, :].flatten().tolist())
+        train_data[:, i, :]     = (train_data[:, i, :]    - mean) / std
+        validate_data[:, i, :]  = (validate_data[:, i, :] - mean) / std
+        test_data[:, i, :]      = (test_data[:, i, :]     - mean) / std
+
+
     # =============================================================================
     train_data    = train_data.reshape((len(train_data),       np.prod(train_data.shape[1:])),    order = 'F') 
     validate_data = validate_data.reshape((len(validate_data), np.prod(validate_data.shape[1:])), order = 'F')
