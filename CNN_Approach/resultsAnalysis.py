@@ -46,6 +46,5 @@ def main(myModel, test_combo, test_data):
             file_con_mat = np.array([[0,0],[1,0]])
     
     # =============================================================================
-    print(name, test_combo[0][1], bool(file_acc))
     return [file_acc, snippet_acc, file_con_mat, snippet_con_mat]
     

@@ -1,10 +1,10 @@
 from os import walk
-def main(dataset_main_path, classes):
+def main(dataset_main_path, classes, slash):
     classes = ["Normal", "Pathol"]
     name_class_combo = []
     for a_class in classes:
         main_names = []
-        for (dirpath, dirnames, filenames) in walk(dataset_main_path + "/" + a_class):
+        for (dirpath, dirnames, filenames) in walk(dataset_main_path + slash + a_class):
             main_names.extend(filenames)
             break
         for i in range(len(main_names)):

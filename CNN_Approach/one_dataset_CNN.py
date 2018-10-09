@@ -7,6 +7,7 @@ import CNN
 import pickle
 import dataSplit
 import matplotlib
+import mySVM
 matplotlib.use('Agg')
 import getCombination
 from   matplotlib              import pyplot             as plt
@@ -14,7 +15,7 @@ from   keras                   import backend            as K
 from   loadMelSpectrogram      import loadMelSpectrogram
 from   resultsAnalysisCNN      import resultsAnalysis
 from   keras.utils             import plot_model
-from   keras.models            import load_model
+from   keras.models            import load_model, Model
 from   sklearn.model_selection import KFold
 from   math                    import ceil
 
@@ -44,17 +45,18 @@ snippet_hop    = 100    #in ms
 fft_length     = 512
 fft_hop        = 128
 mel_length     = 128
-num_rows       = 128
+num_MFCCs      = 20
+num_rows       = num_MFCCs
 dsp_package    = [fs, snippet_length, snippet_hop, fft_length, fft_hop, num_rows]
 
 
 # =============================================================================
 # Deep Learning Initialization
 fold_num      = 1
-train_percent = 90
+train_percent = 75
 epoch_limit   = 100000
 batch_size    = 1024
-num_channel   = 2
+num_channel   = 1
 input_shape   = (int(num_rows / num_channel), ceil(snippet_length / 1000 * fs / fft_hop), num_channel)
 monitor       = "val_loss"
 
@@ -140,14 +142,22 @@ for fold_num in range(num_folds):
     
 
     # ==============================================================================
-    train_data,    train_label_1,    _, _, train_dist,    _                   = train_package
-    validate_data, validate_label_1, _, _, validate_dist, _                   = validate_package
-    test_data,     test_label_1,     _, _, test_dist,     test_augment_amount = test_package
-    print(train_dist)
-    print(validate_dist)
-    print(test_dist)
+    train_data,    train_label_1,    _, train_label_3,    train_dist,    _                   = train_package
+    validate_data, validate_label_1, _, validate_label_3, validate_dist, _                   = validate_package
+    test_data,     test_label_1,     _, test_label_3,     test_dist,     test_augment_amount = test_package
 
     
+    for i in range(num_rows):
+
+        max_standard           = max(np.amax(train_data[:, :, i, :]), np.amax(validate_data[:, :, i, :]))
+        min_standard           = min(np.amin(train_data[:, :, i, :]), np.amin(validate_data[:, :, i, :]))
+        
+        train_data[:, :, i, :]    = (train_data[:, :, i, :]    - min_standard) / (max_standard - min_standard)
+        validate_data[:, :, i, :] = (validate_data[:, :, i, :] - min_standard) / (max_standard - min_standard)
+        test_data[:, :, i, :]     = (test_data[:, :, i, :]     - min_standard) / (max_standard - min_standard)
+        test_data[:, :, i, :]     = np.clip(test_data[:, :, i, :], 0, 1)
+    
+
     # ==============================================================================
     train_data    = train_data.reshape(train_data.shape[0],       num_channel, int(train_data.shape[2]    / num_channel), train_data.shape[3])   
     validate_data = validate_data.reshape(validate_data.shape[0], num_channel, int(validate_data.shape[2] / num_channel), validate_data.shape[3]) 
@@ -157,13 +167,12 @@ for fold_num in range(num_folds):
     train_data    = np.moveaxis(train_data,    1, -1)
     validate_data = np.moveaxis(validate_data, 1, -1)
     test_data     = np.moveaxis(test_data,     1, -1)
-    print(train_data.shape, validate_data.shape, test_data.shape)
 
 
     # ==============================================================================
     _, history = CNN.main(train_data, train_label_1, test_data, test_label_1, epoch_limit, batch_size, input_shape, monitor)
     best_CNN   = load_model(best_model_name)
-
+    extractor  = Model(inputs = best_CNN.input, outputs = best_CNN.layers[-2].output)
 
     # ==============================================================================
     # save the plot of validation loss
@@ -172,16 +181,36 @@ for fold_num in range(num_folds):
     plt.clf()
 
     # ==============================================================================
-    cur_result_package = resultsAnalysis(best_CNN, test_combo, test_data, test_label_1, test_augment_amount, classes)
-    cur_file_acc, cur_snippet_acc, cur_file_con_mat, cur_snippet_con_mat = cur_result_package
+    # cur_result_package = resultsAnalysis(best_CNN, test_combo, test_data, test_label_1, test_augment_amount, classes)
+    # cur_file_acc, cur_snippet_acc, cur_file_con_mat, cur_snippet_con_mat = cur_result_package
+    # print('----------------------------')
+    # print(cur_file_acc)
+    # print(cur_snippet_acc)
+    # print(cur_file_con_mat)
+    # print(cur_snippet_con_mat)
+    
+    # =============================================================================
+    train_data_CNNed    = extractor.predict(train_data)
+    validate_data_CNNed = extractor.predict(validate_data)
+    test_data_CNNed     = extractor.predict(test_data)
+
+
+    # =============================================================================
+    fold_result_package  = mySVM.method1(train_data_CNNed,    train_label_3, 
+                                         validate_data_CNNed, validate_label_3, 
+                                         test_data_CNNed,     test_label_3,
+                                         test_combo,          test_augment_amount)
+    
+
+    # =============================================================================
+    cur_file_acc, cur_file_con_mat, cur_snippet_acc, cur_snippet_con_mat = fold_result_package
     print('----------------------------')
     print(cur_file_acc)
     print(cur_snippet_acc)
     print(cur_file_con_mat)
     print(cur_snippet_con_mat)
 
-
-    # ==============================================================================
+    # =============================================================================
     file_results.append(cur_file_acc)
     snippet_results.append(cur_snippet_acc)
     file_con_mat    = file_con_mat    + cur_file_con_mat
@@ -198,8 +227,10 @@ for fold_num in range(num_folds):
 
     # ==============================================================================
     # Predict the future
-    cur_possible_result = ((53 - file_con_mat[0][1]) / 53 + (655 - file_con_mat[1][0]) / 655) / 2
-    print('The best results we can get is:', cur_possible_result)
+    cur_possible_result_Normal = (len(normal_name_class_combo) - file_con_mat[0][1]) / len(normal_name_class_combo) / 2 
+    cur_possible_result_Pathol = (len(pathol_name_class_combo) - file_con_mat[1][0]) / len(pathol_name_class_combo) / 2
+                       
+    print('The best results we can get is:', cur_possible_result_Normal + cur_possible_result_Pathol)
 
 
 # ==============================================================================

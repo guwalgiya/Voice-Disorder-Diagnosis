@@ -53,18 +53,14 @@ def loadMelSpectrogram(selected_combo, classes, dsp_package, dataset_path, data,
         # =============================================================================
         if augmented:
             melSpectrograms = [data_point[2] for data_point in data if (data_point[0] == original_file_name)]
-            for i in np.arange(start_index, end_index):
-                loaded_data[i][0] = melSpectrograms[i - start_index]
-                loaded_data[i][0] = loaded_data[i][0] / loaded_data[i][0].max()
-                #loaded_data[i][1] = ndimage.uniform_filter(loaded_data[i][0], size = 3)
         else:
             melSpectrograms = [data_point[2] for data_point in data if (data_point[0] == original_file_name and data_point[1] == "N0.0")]
-            for i in np.arange(start_index, end_index):
-                loaded_data[i][0] = melSpectrograms[i - start_index]
-                loaded_data[i][0] = loaded_data[i][0] / loaded_data[i][0].max()
-                #loaded_data[i][1] = ndimage.uniform_filter(loaded_data[i][0], size = 3)
-                
+            
         # =============================================================================
-        start_index  = start_index + snippet_dict[original_file_name][0]    
+        for i in np.arange(start_index, end_index):
+            S                 = melSpectrograms[i - start_index]
+            #S              = loaded_data[i] / loaded_data[i].max()
+            loaded_data[i][0] = librosa.feature.mfcc(S = librosa.power_to_db(S), n_mfcc = num_rows)
+        start_index  = start_index + snippet_dict[original_file_name][0] 
 
     return [loaded_data, label_1, label_2, label_3, distribution, snippet_num_list]

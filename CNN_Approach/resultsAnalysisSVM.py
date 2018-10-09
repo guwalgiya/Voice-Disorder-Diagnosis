@@ -6,7 +6,6 @@ def main(myModel, test_combo, test_data, test_label2, test_augment_amount, class
     voted_labels = []
     true_labels  = []
     prediction   = myModel.predict(test_data)
-
     for i in range(len(test_combo)):
         #print('--------------------')
     
@@ -26,9 +25,13 @@ def main(myModel, test_combo, test_data, test_label2, test_augment_amount, class
                 classes_weight.append(weight)
 
             max_weight_index = 0 if classes_weight[0] > classes_weight[1] else 1
-            if (label == "Pathol" and max_weight_index == 0) or (label == "Normal" and max_weight_index == 1):
-                print(name, label, classes_weight)
+            #print(classes_weight)
             #print(max_weight_index)
+
+            if (label == "Pathol" and max_weight_index == 0) or (label == "Normal" and max_weight_index == 1):
+            #if label == "Normal":
+                print(name, label, classes_weight)
+                
             index = index  + amount
             voted_labels.append(classes[max_weight_index])
             true_labels.append(label)
