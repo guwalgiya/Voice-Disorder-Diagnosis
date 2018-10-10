@@ -46,7 +46,7 @@ def main(input_vector_length, x_train, x_validate, arch_bundle, train_bundle):
     
 
     # =============================================================================
-    early_stopping = EarlyStopping(monitor = 'val_loss', patience = 30, verbose = 0, min_delta = 0.00001, mode = 'min')
+    early_stopping = EarlyStopping(monitor = 'val_loss', patience = 5, verbose = 0, min_delta = 0.0001, mode = 'min')
     
 
     # =============================================================================

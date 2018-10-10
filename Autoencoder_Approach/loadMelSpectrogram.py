@@ -3,21 +3,24 @@ import numpy   as     np
 import librosa
 import math
 
-def loadMelSpectrogram(selected_combo, classes, dsp_package, dataset_path, data, augmented, snippet_dict):
+def loadMelSpectrogram(selected_combo, classes, dsp_package, num_rows, representation_type, data, augmented, snippet_dict):
 
     # =============================================================================
-    fs, snippet_length, snippet_hop, fft_length, fft_hop, num_rows = dsp_package
-    label_1, label_2, label_3, snippet_num_list, distribution        = [], [], [], [], {}
+    fs, snippet_length, snippet_hop, fft_length, fft_hop      = dsp_package
+    label_1, label_2, label_3, snippet_num_list, distribution = [], [], [], [], {}
     
+
     # =============================================================================
     #[0 originial files, 0 snippets]
     for a_class in classes:
         distribution[a_class] = [0,0]
     
+
     # =============================================================================   
     for combo in selected_combo:
         original_file_name  = combo[0]
         original_file_class = combo[1]
+
 
         # =============================================================================
         # label_1: 1, label_2:[0,1], label_3: pathol   
@@ -57,12 +60,17 @@ def loadMelSpectrogram(selected_combo, classes, dsp_package, dataset_path, data,
             melSpectrograms = [data_point[2] for data_point in data if (data_point[0] == original_file_name and data_point[1] == "N0.0")]
             
         # =============================================================================
-        for i in np.arange(start_index, end_index):
-            S              = melSpectrograms[i - start_index]
-            #S              = loaded_data[i] / loaded_data[i].max()
-            loaded_data[i] = librosa.feature.mfcc(S = librosa.power_to_db(S), n_mfcc = 20)
-        start_index  = start_index + snippet_dict[original_file_name][0] 
+        if representation_type == "MFCCs":
+            for i in np.arange(start_index, end_index):
+                S              = melSpectrograms[i - start_index]
+                loaded_data[i] = librosa.feature.mfcc(S = librosa.power_to_db(S), n_mfcc = 20)
+            
+        else:
+            for i in np.arange(start_index, end_index):
+                S              = melSpectrograms[i - start_index]
+                loaded_data[i] = S / S.max()
 
+        start_index  = start_index + snippet_dict[original_file_name][0]
     # =============================================================================
     #loaded_data = loaded_data.reshape((len(loaded_data), np.prod(loaded_data.shape[1:])), order = 'F')      
 

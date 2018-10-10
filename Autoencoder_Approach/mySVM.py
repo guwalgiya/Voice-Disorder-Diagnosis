@@ -8,7 +8,7 @@ from   sklearn.utils           import class_weight
 def method1(train_data, train_label2, validate_data, validate_label2, test_data, test_label2, test_combo, test_augment_amount):
     classes   =  ["Normal", "Pathol"]
     best_acc  =  0
-    c_values  =  [0.1,  1,   10, 100, 1000]
+    c_values  =  [0.1,  1,   10, 100]
 
     train_class_weight_raw = class_weight.compute_class_weight('balanced', np.unique(train_label2), train_label2)
     train_class_weight     = {}

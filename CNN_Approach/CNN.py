@@ -18,25 +18,25 @@ def main(train_data, train_label, validate_data, validate_label, epoch_limit, ba
 
     # =============================================================================
     CNN = Sequential()
-    CNN.add(Conv2DTranspose(15, kernel_size = (5, 5), strides = (3, 3),  activation = 'relu', input_shape = input_shape))
+    CNN.add(Conv2DTranspose(5, kernel_size = (3, 3), strides = (1, 1),  activation = 'relu', input_shape = input_shape))
     CNN.add(MaxPooling2D(pool_size = (2, 2)))
-    CNN.add(Conv2DTranspose(31, kernel_size = (3, 3), strides = (1, 1),  activation = 'relu'))
+    CNN.add(Conv2DTranspose(5, kernel_size = (3, 3), strides = (1, 1),  activation = 'relu'))
     CNN.add(MaxPooling2D(pool_size = (2, 2)))
     
 
     # =============================================================================
     CNN.add(Flatten())
+    CNN.add(Dense(1024,  activation = 'relu'))
+    CNN.add(Dense(128,  activation = 'relu'))
+    #CNN.add(Dense(256,  activation = 'relu'))
     #CNN.add(Dense(1024,  activation = 'relu'))
-    CNN.add(Dense(1024,  activation = 'relu'))
-    CNN.add(Dense(1024,  activation = 'relu'))
-    CNN.add(Dense(1024,  activation = 'relu'))
-    #CNN.add(Dense(64,   activation = 'relu',    kernel_initializer = RandomNormal(mean=0.0, stddev=0.05, seed=None)))
+    #CNN.add(Dense(128,   activation = 'relu'))
     CNN.add(Dense(1,    activation = 'sigmoid'))
 
 
     # =============================================================================
     CNN.compile(loss      = binary_crossentropy,
-                optimizer = Adam(lr = 0.001, beta_1 = 0.9, beta_2 = 0.999),
+                optimizer = Adam(lr = 0.00001, beta_1 = 0.9, beta_2 = 0.999),
                 metrics   = ['acc'])
 
     # =============================================================================
@@ -47,7 +47,7 @@ def main(train_data, train_label, validate_data, validate_label, epoch_limit, ba
 
     
     # =============================================================================
-    early_stopping = EarlyStopping(monitor = monitor, patience = 3, verbose = 0,  mode = 'min', min_delta = 0.0001)
+    early_stopping = EarlyStopping(monitor = monitor, patience = 20, verbose = 0,  mode = 'min', min_delta = 0.0001)
     print(train_class_weight)
 
     # =============================================================================

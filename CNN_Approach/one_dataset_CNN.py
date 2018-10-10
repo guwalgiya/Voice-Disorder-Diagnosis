@@ -23,7 +23,7 @@ from   math                    import ceil
 # =============================================================================
 # Environment Setup
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-dataset_path                       = "/home/hguan/7100-Master-Project/Dataset-Spanish"
+dataset_path                       = "/home/hguan/7100-Master-Project/Dataset-KayPentax"
 slash                              = "/"
 #dataset_path                      = "C:\\Master Degree\\7100 - Master Project\\Dataset - KayPentax"
 #slash                             = "\\"
@@ -53,7 +53,7 @@ dsp_package    = [fs, snippet_length, snippet_hop, fft_length, fft_hop, num_rows
 # =============================================================================
 # Deep Learning Initialization
 fold_num      = 1
-train_percent = 75
+train_percent = 90
 epoch_limit   = 100000
 batch_size    = 1024
 num_channel   = 1
@@ -147,15 +147,15 @@ for fold_num in range(num_folds):
     test_data,     test_label_1,     _, test_label_3,     test_dist,     test_augment_amount = test_package
 
     
-    # for i in range(num_rows):
+    for i in range(num_rows):
 
-    #     max_standard           = max(np.amax(train_data[:, :, i, :]), np.amax(validate_data[:, :, i, :]))
-    #     min_standard           = min(np.amin(train_data[:, :, i, :]), np.amin(validate_data[:, :, i, :]))
+        max_standard           = max(np.amax(train_data[:, :, i, :]), np.amax(validate_data[:, :, i, :]))
+        min_standard           = min(np.amin(train_data[:, :, i, :]), np.amin(validate_data[:, :, i, :]))
         
-    #     train_data[:, :, i, :]    = (train_data[:, :, i, :]    - min_standard) / (max_standard - min_standard)
-    #     validate_data[:, :, i, :] = (validate_data[:, :, i, :] - min_standard) / (max_standard - min_standard)
-    #     test_data[:, :, i, :]     = (test_data[:, :, i, :]     - min_standard) / (max_standard - min_standard)
-    #     test_data[:, :, i, :]     = np.clip(test_data[:, :, i, :], 0, 1)
+        train_data[:, :, i, :]    = (train_data[:, :, i, :]    - min_standard) / (max_standard - min_standard)
+        validate_data[:, :, i, :] = (validate_data[:, :, i, :] - min_standard) / (max_standard - min_standard)
+        test_data[:, :, i, :]     = (test_data[:, :, i, :]     - min_standard) / (max_standard - min_standard)
+        test_data[:, :, i, :]     = np.clip(test_data[:, :, i, :], 0, 1)
     
 
     # ==============================================================================

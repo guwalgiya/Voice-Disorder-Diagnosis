@@ -13,7 +13,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # =============================================================================
 # Dataset Initialization
 classes = ['Normal','Pathol']
-dataset_path   = "/home/hguan/7100-Master-Project/Dataset-Spanish"
+dataset_path   = "/home/hguan/7100-Master-Project/Dataset-KayPentax"
 train_percent      = 90
 num_folds          = 5
 input_name         = "MFCCs"
@@ -108,19 +108,20 @@ for fold_num in range(num_folds):
     validate_data, _,    _, validate_label_3,  validate_dist, validate_augment_amount,  = validate_package
     test_data,     _,    _, test_label_3,      test_dist,     test_augment_amount,      = test_package
     
-    print(train_dist, validate_dist, test_dist)
+    print(train_dist)
+    print(validate_dist)
+    print(test_dist)
     #print(validate_augment_amount, test_augment_amount)
     train_data_normalized    = np.zeros((train_data.shape))
     validate_data_normalized = np.zeros((validate_data.shape))
     test_data_normalized     = np.zeros((test_data.shape))
 
-    for i in range(input_vector_length):
-        standard = max(max(abs(train_data[:, i])), max(abs(validate_data[:, i])))
-        train_data_normalized[:, i]    = train_data[:,i]      / float(standard)
-        validate_data_normalized[:, i] = validate_data[:, i]  / float(standard)
-        test_data_normalized[:, i]     = test_data[:,i]       / float(standard)
-
-
+    for i in range(input_vector_length):      
+        mean                    = np.mean(train_data[:, i].flatten().tolist() + validate_data[:, i].flatten().tolist())
+        std                     = np.std(train_data[:, i].flatten().tolist()  + validate_data[:, i].flatten().tolist())
+        train_data_normalized[:, i]        = (train_data[:, i]    - mean) / std
+        validate_data_normalized[:, i]     = (validate_data[:, i] - mean) / std
+        test_data_normalized[:, i]         = (test_data[:, i]     - mean) / std
 
     cur_result_package = mySVM.method1(train_data_normalized,    train_label_3, 
                                                                           validate_data_normalized, validate_label_3, 

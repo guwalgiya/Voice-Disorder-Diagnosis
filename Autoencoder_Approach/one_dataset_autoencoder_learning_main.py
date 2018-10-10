@@ -46,23 +46,26 @@ fft_length          = 512
 fft_hop             = 128
 mel_length          = 128
 num_MFCCs           = 20
-num_row             = num_MFCCs
-dsp_package         = [fs, snippet_length, snippet_hop, fft_length, fft_hop, num_row]
+num_rows_1          = num_MFCCs
+dsp_package         = [fs, snippet_length, snippet_hop, fft_length, fft_hop]
+num_rows_2          = mel_length
 #input_vector_length = mel_length * math.ceil(snippet_length / 1000 * fs / fft_hop)
-input_vector_length = num_row * math.ceil(snippet_length / 1000 * fs / fft_hop)
+input_vector_length_1 = num_rows_1 * math.ceil(snippet_length / 1000 * fs / fft_hop)
+input_vector_length_2 = num_rows_2 * math.ceil(snippet_length / 1000 * fs / fft_hop)
 input_name          = "MelSpectrogram"
 
 
 # =============================================================================
 # Autoencoder Initialization
-encoding_dimension = 128
-encoder_layer      = 3
-decoder_layer      = 3
+encoding_dimension = 256
+encoder_layer      = 6
+decoder_layer      = 6
 epoch_limit        = 10000000
 batch_auto         = 1024
 shuffle_choice     = True
 loss_function      = 'mean_squared_error'
-arch_bundle        = [encoder_layer, encoding_dimension, decoder_layer]
+arch_bundle_1      = [encoder_layer, encoding_dimension, decoder_layer]
+arch_bundle_2      = [4, 128, 4]
 train_bundle_auto  = [epoch_limit, batch_auto, shuffle_choice, loss_function]
 
 
@@ -129,33 +132,32 @@ for fold_index in range(num_folds):
 
 
     # =============================================================================
-    train_package     = loadMelSpectrogram(train_combo,    classes, dsp_package, dataset_path, data, True,  aug_dict)   
-    validate_package  = loadMelSpectrogram(validate_combo, classes, dsp_package, dataset_path, data, False, unaug_dict)   
-    test_package      = loadMelSpectrogram(test_combo,     classes, dsp_package, dataset_path, data, False, unaug_dict)
+    # Train Part I
+    train_package     = loadMelSpectrogram(train_combo,    classes, dsp_package, num_rows_1, "MFCCs", data, True,  aug_dict)   
+    validate_package  = loadMelSpectrogram(validate_combo, classes, dsp_package, num_rows_1, "MFCCs", data, False, unaug_dict)   
+    test_package      = loadMelSpectrogram(test_combo,     classes, dsp_package, num_rows_1, "MFCCs", data, False, unaug_dict)
     
 
     # =============================================================================
-    train_data,    _,  _, train_label3,    train_dist,    _                       = train_package
-    validate_data, _,  _, validate_label3, validate_dist, validate_augment_amount = validate_package
-    test_data,     _,  _, test_label3,     test_dist,     test_augment_amount     = test_package
-    print(train_dist)
-    print(validate_dist)
-    print(test_dist)
-    
-    for i in range(num_row):
+    train_data,    _,  _, train_label_3,    train_dist,    _                       = train_package
+    validate_data, _,  _, validate_label_3, validate_dist, validate_augment_amount = validate_package
+    test_data,     _,  _, test_label_3,     test_dist,     test_augment_amount     = test_package
 
-        #max_standard           = max(np.amax(train_data[:, i, :]), np.amax(validate_data[:, i, :]))
-        #min_standard           = min(np.amin(train_data[:, i, :]), np.amin(validate_data[:, i, :]))
+    
+    for i in range(num_rows_1):
+
+        max_standard           = max(np.amax(train_data[:, i, :]), np.amax(validate_data[:, i, :]))
+        min_standard           = min(np.amin(train_data[:, i, :]), np.amin(validate_data[:, i, :]))
         
-        #train_data[:, i, :]    = (train_data[:, i, :]    - min_standard) / (max_standard - min_standard) 
-        #validate_data[:, i, :] = (validate_data[:, i, :] - min_standard) / (max_standard - min_standard) 
-        #test_data[:, i, :]     = (test_data[:, i, :]     - min_standard) / (max_standard - min_standard) 
-        #test_data[:, i, :]     = np.clip(test_data[:, i, :], 0, 1)
-        mean                    = np.mean(train_data[:, i, :].flatten().tolist() + validate_data[:, i, :].flatten().tolist())
-        std                     = np.std(train_data[:, i, :].flatten().tolist()  + validate_data[:, i, :].flatten().tolist())
-        train_data[:, i, :]     = (train_data[:, i, :]    - mean) / std
-        validate_data[:, i, :]  = (validate_data[:, i, :] - mean) / std
-        test_data[:, i, :]      = (test_data[:, i, :]     - mean) / std
+        train_data[:, i, :]    = (train_data[:, i, :]    - min_standard) / (max_standard - min_standard) 
+        validate_data[:, i, :] = (validate_data[:, i, :] - min_standard) / (max_standard - min_standard) 
+        test_data[:, i, :]     = (test_data[:, i, :]     - min_standard) / (max_standard - min_standard) 
+        test_data[:, i, :]     = np.clip(test_data[:, i, :], 0, 1)
+        # mean                    = np.mean(train_data[:, i, :].flatten().tolist() + validate_data[:, i, :].flatten().tolist())
+        # std                     = np.std(train_data[:, i, :].flatten().tolist()  + validate_data[:, i, :].flatten().tolist())
+        # train_data[:, i, :]     = (train_data[:, i, :]    - mean) / std
+        # validate_data[:, i, :]  = (validate_data[:, i, :] - mean) / std
+        # test_data[:, i, :]      = (test_data[:, i, :]     - mean) / std
 
 
     # =============================================================================
@@ -165,10 +167,10 @@ for fold_index in range(num_folds):
 
 
     # =============================================================================
-    _, history, encodeLayer_index = autoencoder.main(input_vector_length, train_data, validate_data, arch_bundle, train_bundle_auto)
+    _, history, encodeLayer_index = autoencoder.main(input_vector_length_1, train_data, validate_data, arch_bundle_1, train_bundle_auto)
     best_autoencoder              = load_model(best_model_name)
     best_encoder                  = Model(inputs  = best_autoencoder.inputs, outputs = best_autoencoder.layers[encodeLayer_index].output)
-    #print(best_encoder.summary())
+
 
     # ===============================================================================
     # save the plot of validation loss
@@ -178,16 +180,55 @@ for fold_index in range(num_folds):
 
 
     # ===============================================================================
-    train_data_encoded     = best_encoder.predict(train_data)
-    validate_data_encoded  = best_encoder.predict(validate_data)
-    test_data_encoded      = best_encoder.predict(test_data)
+    train_data_encoded_1     = best_encoder.predict(train_data)
+    validate_data_encoded_1  = best_encoder.predict(validate_data)
+    test_data_encoded_1      = best_encoder.predict(test_data)
 
+
+    # # =============================================================================
+    # # Train Part II
+    # train_package     = loadMelSpectrogram(train_combo,    classes, dsp_package, num_rows_2, "MelSpectrogram", data, True,  aug_dict)   
+    # validate_package  = loadMelSpectrogram(validate_combo, classes, dsp_package, num_rows_2, "MelSpectrogram", data, False, unaug_dict)   
+    # test_package      = loadMelSpectrogram(test_combo,     classes, dsp_package, num_rows_2, "MelSpectrogram", data, False, unaug_dict)
+    
+    
+    # # =============================================================================
+    # train_data,    _,  _, _, _, _ = train_package
+    # validate_data, _,  _, _, _, _ = validate_package
+    # test_data,     _,  _, _, _, _ = test_package
+    
+
+    # # =============================================================================
+    # train_data    = train_data.reshape((len(train_data),       np.prod(train_data.shape[1:])),    order = 'F') 
+    # validate_data = validate_data.reshape((len(validate_data), np.prod(validate_data.shape[1:])), order = 'F')
+    # test_data     = test_data.reshape((len(test_data),         np.prod(test_data.shape[1:])),     order = 'F')
+
+
+    # # =============================================================================
+    # _, history, encodeLayer_index = autoencoder.main(input_vector_length_2, train_data, validate_data, arch_bundle_2, train_bundle_auto)
+    # best_autoencoder              = load_model(best_model_name)
+    # best_encoder                  = Model(inputs  = best_autoencoder.inputs, outputs = best_autoencoder.layers[encodeLayer_index].output)
+
+
+    # # ===============================================================================
+    # train_data_encoded_2     = best_encoder.predict(train_data)
+    # validate_data_encoded_2  = best_encoder.predict(validate_data)
+    # test_data_encoded_2      = best_encoder.predict(test_data)
+
+
+    # # ===============================================================================
+    # #print(train_data_encoded_1.shape)
+    # #print(train_data_encoded_2.shape)
+    # train_data_encoded    = np.concatenate((train_data_encoded_1,    train_data_encoded_2),    axis = 1)
+    # validate_data_encoded = np.concatenate((validate_data_encoded_1, validate_data_encoded_2), axis = 1)
+    # test_data_encoded     = np.concatenate((test_data_encoded_1,     test_data_encoded_2),     axis = 1)
+    # print(train_data_encoded.shape)
 
 
     # ===============================================================================
-    fold_result_package  = mySVM.method1(train_data_encoded,    train_label3, 
-                                         validate_data_encoded, validate_label3, 
-                                         test_data_encoded,     test_label3,
+    fold_result_package  = mySVM.method1(train_data_encoded_1,    train_label_3, 
+                                         validate_data_encoded_1, validate_label_3, 
+                                         test_data_encoded_1,     test_label_3,
                                          test_combo,            test_augment_amount)
     
     
