@@ -42,11 +42,11 @@ def main(input_vector_length, x_train, x_validate, arch_bundle, train_bundle):
 
 
     # =============================================================================
-    autoencoder.compile(optimizer = Adam(lr = 0.001, beta_1 = 0.9, beta_2 = 0.999), loss = loss_function)
-    
+    autoencoder.compile(optimizer = Adam(lr = 0.00001, beta_1 = 0.9, beta_2 = 0.999), loss = loss_function)
+    #print(autoencoder.summary())
 
     # =============================================================================
-    early_stopping = EarlyStopping(monitor = 'val_loss', patience = 5, verbose = 0, min_delta = 0.0001, mode = 'min')
+    early_stopping = EarlyStopping(monitor = 'val_loss', patience = 20, verbose = 0, min_delta = 0.0001, mode = 'min')
     
 
     # =============================================================================
@@ -70,6 +70,6 @@ def main(input_vector_length, x_train, x_validate, arch_bundle, train_bundle):
         layer_size.append(layer.get_output_at(0).get_shape().as_list()[1])
     encodeLayer_index = layer_size.index(min(layer_size))
 
-
+    
     # =============================================================================
     return encoder, history, encodeLayer_index

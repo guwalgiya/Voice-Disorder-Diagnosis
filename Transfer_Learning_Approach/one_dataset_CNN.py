@@ -3,11 +3,11 @@
 import tensorflow              as     tf
 import numpy                   as     np 
 import os
-import CNN
+from   transfered_CNN          import CNN
 import pickle
 import dataSplit
 import matplotlib
-import mySVM
+#import mySVM
 matplotlib.use('Agg')
 import getCombination
 from   matplotlib              import pyplot             as plt
@@ -54,9 +54,9 @@ dsp_package    = [fs, snippet_length, snippet_hop, fft_length, fft_hop]
 # Deep Learning Initialization
 fold_num      = 1
 train_percent = 90
-epoch_limit   = 100000
-batch_size    = 1024
-num_channel   = 4
+epoch_limit   = 10000000
+batch_size    = 128
+num_channel   = 1
 input_shape   = (int(num_rows / num_channel), ceil(snippet_length / 1000 * fs / fft_hop), num_channel)
 monitor       = "val_loss"
 
@@ -84,9 +84,6 @@ pathol_split_index = [] # be very careful here
 for train_validate_index, test_index in pathol_split:
     pathol_split_index.append([pathol_index_array[train_validate_index], pathol_index_array[test_index]])
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.4)
-
-sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
 # =============================================================================
 # Loading Data
@@ -133,52 +130,50 @@ for fold_num in range(num_folds):
     
 
     # ==============================================================================
-    train_combo    = normal_train_combo * 3  + pathol_train_combo
-    validate_combo = normal_validate_combo   + pathol_validate_combo
-    test_combo     = normal_test_combo       + pathol_test_combo
+    train_combo    = normal_train_combo    + pathol_train_combo
+    validate_combo = normal_validate_combo + pathol_validate_combo
+    test_combo     = normal_test_combo     + pathol_test_combo
 
 
     # ==============================================================================
-    train_package     = loadMelSpectrogram(train_combo,    classes, dsp_package, num_rows, "melSpec", data, True,  aug_dict)
-    validate_package  = loadMelSpectrogram(validate_combo, classes, dsp_package, num_rows, "melSpec", data, False, unaug_dict)   
-    test_package      = loadMelSpectrogram(test_combo,     classes, dsp_package, num_rows, "melSpec", data, False, unaug_dict)
+    train_package     = loadMelSpectrogram(train_combo,    classes, dsp_package, num_rows, "melspec", data, True,  aug_dict)
+    validate_package  = loadMelSpectrogram(validate_combo, classes, dsp_package, num_rows, "melspec", data, False, unaug_dict)   
+    test_package      = loadMelSpectrogram(test_combo,     classes, dsp_package, num_rows, "melspec", data, False, unaug_dict)
     
 
     # ==============================================================================
-    train_data,    _,            train_label_2,    train_label_3,    train_dist,    _                   = train_package
-    validate_data, _,            validate_label_2, validate_label_3, validate_dist, _                   = validate_package
-    test_data,     test_label_1, test_label_2,     test_label_3,     test_dist,     test_augment_amount = test_package
-    print(train_dist)
-    print(validate_dist)
-    print(test_dist)
-    
-    for i in range(num_rows):
+    train_data,    train_label_1,    _, train_label_3,    train_dist,    _                   = train_package
+    validate_data, validate_label_1, _, validate_label_3, validate_dist, _                   = validate_package
+    test_data,     test_label_1,     _, test_label_3,     test_dist,     test_augment_amount = test_package
 
-        max_standard           = max(np.amax(train_data[:, i, :]), np.amax(validate_data[:, i, :]))
-        min_standard           = min(np.amin(train_data[:, i, :]), np.amin(validate_data[:, i, :]))
+    
+    # for i in range(num_rows):
+
+    #     max_standard           = max(np.amax(train_data[:, :, i, :]), np.amax(validate_data[:, :, i, :]))
+    #     min_standard           = min(np.amin(train_data[:, :, i, :]), np.amin(validate_data[:, :, i, :]))
         
-        train_data[:, i, :]    = (train_data[:, i, :]    - min_standard) / (max_standard - min_standard)
-        validate_data[:, i, :] = (validate_data[:, i, :] - min_standard) / (max_standard - min_standard)
-        test_data[:, i, :]     = (test_data[:, i, :]     - min_standard) / (max_standard - min_standard)
-        test_data[:, i, :]     = np.clip(test_data[:, i, :], 0, 1)
+    #     train_data[:, :, i, :]    = (train_data[:, :, i, :]    - min_standard) / (max_standard - min_standard)
+    #     validate_data[:, :, i, :] = (validate_data[:, :, i, :] - min_standard) / (max_standard - min_standard)
+    #     test_data[:, :, i, :]     = (test_data[:, :, i, :]     - min_standard) / (max_standard - min_standard)
+    #     test_data[:, :, i, :]     = np.clip(test_data[:, :, i, :], 0, 1)
     
 
     # ==============================================================================
-    train_data    = train_data.reshape(train_data.shape[0],       num_channel, int(train_data.shape[1]    / num_channel), train_data.shape[2])   
-    validate_data = validate_data.reshape(validate_data.shape[0], num_channel, int(validate_data.shape[1] / num_channel), validate_data.shape[2]) 
-    test_data     = test_data.reshape(test_data.shape[0],         num_channel, int(test_data.shape[1]     / num_channel), test_data.shape[2]) 
+    # train_data    = train_data.reshape(train_data.shape[0],       num_channel, int(train_data.shape[2]    / num_channel), train_data.shape[3])   
+    # validate_data = validate_data.reshape(validate_data.shape[0], num_channel, int(validate_data.shape[2] / num_channel), validate_data.shape[3]) 
+    # test_data     = test_data.reshape(test_data.shape[0],         num_channel, int(test_data.shape[2]     / num_channel), test_data.shape[3]) 
     
     # ==============================================================================
     train_data    = np.moveaxis(train_data,    1, -1)
     validate_data = np.moveaxis(validate_data, 1, -1)
     test_data     = np.moveaxis(test_data,     1, -1)
 
-
+    #print(train_data.shape)
     # ==============================================================================
-    _, history = CNN.main(train_data, train_label_2, test_data, test_label_2, epoch_limit, batch_size, input_shape, monitor)
+    _, history = CNN(train_data, train_label_1, test_data, test_label_1, epoch_limit, batch_size, input_shape, monitor)
     best_CNN   = load_model(best_model_name)
-    extractor  = Model(inputs = best_CNN.input, outputs = best_CNN.layers[-3].output)
-    print(extractor.summary())
+    extractor  = Model(inputs = best_CNN.input, outputs = best_CNN.layers[-2].output)
+
     # ==============================================================================
     # save the plot of validation loss
     plt.plot(history.history[monitor])
@@ -188,32 +183,32 @@ for fold_num in range(num_folds):
     # ==============================================================================
     cur_result_package = resultsAnalysis(best_CNN, test_combo, test_data, test_label_1, test_augment_amount, classes)
     cur_file_acc, cur_snippet_acc, cur_file_con_mat, cur_snippet_con_mat = cur_result_package
-    print('----------------------------')
+    #print('----------------------------')
     print(cur_file_acc)
     print(cur_snippet_acc)
     print(cur_file_con_mat)
     print(cur_snippet_con_mat)
     
-    # =============================================================================
-    train_data_CNNed    = extractor.predict(train_data)
-    validate_data_CNNed = extractor.predict(validate_data)
-    test_data_CNNed     = extractor.predict(test_data)
+    # # =============================================================================
+    # train_data_CNNed    = extractor.predict(train_data)
+    # validate_data_CNNed = extractor.predict(validate_data)
+    # test_data_CNNed     = extractor.predict(test_data)
 
 
     # # =============================================================================
-    fold_result_package  = mySVM.method1(train_data_CNNed,    train_label_3, 
-                                         test_data_CNNed,     test_label_3, 
-                                         test_data_CNNed,     test_label_3,
-                                         test_combo,          test_augment_amount)
+    # fold_result_package  = mySVM.method1(train_data_CNNed,    train_label_3, 
+    #                                      validate_data_CNNed, validate_label_3, 
+    #                                      test_data_CNNed,     test_label_3,
+    #                                      test_combo,          test_augment_amount)
     
 
-    # =============================================================================
-    cur_file_acc, cur_file_con_mat, cur_snippet_acc, cur_snippet_con_mat = fold_result_package
-    print('----------------------------')
-    print(cur_file_acc)
-    print(cur_snippet_acc)
-    print(cur_file_con_mat)
-    print(cur_snippet_con_mat)
+    # # =============================================================================
+    # cur_file_acc, cur_file_con_mat, cur_snippet_acc, cur_snippet_con_mat = fold_result_package
+    # print('----------------------------')
+    # print(cur_file_acc)
+    # print(cur_snippet_acc)
+    # print(cur_file_con_mat)
+    # print(cur_snippet_con_mat)
 
     # =============================================================================
     file_results.append(cur_file_acc)

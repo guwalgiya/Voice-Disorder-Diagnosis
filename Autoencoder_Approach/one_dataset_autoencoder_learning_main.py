@@ -57,10 +57,10 @@ input_name          = "MelSpectrogram"
 
 # =============================================================================
 # Autoencoder Initialization
-encoding_dimension = 256
-encoder_layer      = 6
-decoder_layer      = 6
-epoch_limit        = 10000000
+encoding_dimension = 2
+encoder_layer      = 9
+decoder_layer      = 9
+epoch_limit        = 100000000000
 batch_auto         = 1024
 shuffle_choice     = True
 loss_function      = 'mean_squared_error'
@@ -169,72 +169,43 @@ for fold_index in range(num_folds):
     # =============================================================================
     _, history, encodeLayer_index = autoencoder.main(input_vector_length_1, train_data, validate_data, arch_bundle_1, train_bundle_auto)
     best_autoencoder              = load_model(best_model_name)
-    best_encoder                  = Model(inputs  = best_autoencoder.inputs, outputs = best_autoencoder.layers[encodeLayer_index].output)
-
-
+    
+    
     # ===============================================================================
     # save the plot of validation loss
     plt.plot(history.history[monitor])
     plt.savefig(val_loss_plot_name + str(fold_index + 1) + ".png")
     plt.clf()
-
-
-    # ===============================================================================
-    train_data_encoded_1     = best_encoder.predict(train_data)
-    validate_data_encoded_1  = best_encoder.predict(validate_data)
-    test_data_encoded_1      = best_encoder.predict(test_data)
-
-
-    # # =============================================================================
-    # # Train Part II
-    # train_package     = loadMelSpectrogram(train_combo,    classes, dsp_package, num_rows_2, "MelSpectrogram", data, True,  aug_dict)   
-    # validate_package  = loadMelSpectrogram(validate_combo, classes, dsp_package, num_rows_2, "MelSpectrogram", data, False, unaug_dict)   
-    # test_package      = loadMelSpectrogram(test_combo,     classes, dsp_package, num_rows_2, "MelSpectrogram", data, False, unaug_dict)
     
-    
-    # # =============================================================================
-    # train_data,    _,  _, _, _, _ = train_package
-    # validate_data, _,  _, _, _, _ = validate_package
-    # test_data,     _,  _, _, _, _ = test_package
-    
-
-    # # =============================================================================
-    # train_data    = train_data.reshape((len(train_data),       np.prod(train_data.shape[1:])),    order = 'F') 
-    # validate_data = validate_data.reshape((len(validate_data), np.prod(validate_data.shape[1:])), order = 'F')
-    # test_data     = test_data.reshape((len(test_data),         np.prod(test_data.shape[1:])),     order = 'F')
-
-
-    # # =============================================================================
-    # _, history, encodeLayer_index = autoencoder.main(input_vector_length_2, train_data, validate_data, arch_bundle_2, train_bundle_auto)
-    # best_autoencoder              = load_model(best_model_name)
-    # best_encoder                  = Model(inputs  = best_autoencoder.inputs, outputs = best_autoencoder.layers[encodeLayer_index].output)
+    best_file_acc = 0
+    for dim in [2, 4, 8, 16, 32, 64, 128, 256,512, 1024]:
+        print('-----')
+        print(dim)
+        index = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024].index(dim)
+        print(index)
+        best_encoder = Model(inputs  = best_autoencoder.inputs, outputs = best_autoencoder.layers[encodeLayer_index - index].output)
+        print(best_encoder.summary())
+        # ===============================================================================
+        train_data_encoded     = best_encoder.predict(train_data)
+        validate_data_encoded  = best_encoder.predict(validate_data)
+        test_data_encoded      = best_encoder.predict(test_data)
 
 
-    # # ===============================================================================
-    # train_data_encoded_2     = best_encoder.predict(train_data)
-    # validate_data_encoded_2  = best_encoder.predict(validate_data)
-    # test_data_encoded_2      = best_encoder.predict(test_data)
-
-
-    # # ===============================================================================
-    # #print(train_data_encoded_1.shape)
-    # #print(train_data_encoded_2.shape)
-    # train_data_encoded    = np.concatenate((train_data_encoded_1,    train_data_encoded_2),    axis = 1)
-    # validate_data_encoded = np.concatenate((validate_data_encoded_1, validate_data_encoded_2), axis = 1)
-    # test_data_encoded     = np.concatenate((test_data_encoded_1,     test_data_encoded_2),     axis = 1)
-    # print(train_data_encoded.shape)
-
-
-    # ===============================================================================
-    fold_result_package  = mySVM.method1(train_data_encoded_1,    train_label_3, 
-                                         validate_data_encoded_1, validate_label_3, 
-                                         test_data_encoded_1,     test_label_3,
-                                         test_combo,            test_augment_amount)
-    
-    
-    # =============================================================================
-    file_acc, file_con_mat, snippet_acc, snippet_con_mat = fold_result_package
-    
+        # ===============================================================================
+        fold_result_package  = mySVM.method1(train_data_encoded,    train_label_3, 
+                                             validate_data_encoded, validate_label_3, 
+                                             test_data_encoded,     test_label_3,
+                                             test_combo,            test_augment_amount)
+        
+        
+        # =============================================================================
+        file_acc, file_con_mat, snippet_acc, snippet_con_mat = fold_result_package
+        print(file_acc)
+        if file_acc > best_file_acc:
+            best_file_acc = file_acc
+            result_pack   = fold_result_package
+        file_acc, file_con_mat, snippet_acc, snippet_con_mat = result_pack
+    print("Fold Results")
     total_file_con_mat = total_file_con_mat + file_con_mat
     total_snip_con_mat = total_snip_con_mat + snippet_con_mat
     print(file_acc)

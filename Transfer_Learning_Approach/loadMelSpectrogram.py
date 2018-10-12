@@ -67,9 +67,11 @@ def loadMelSpectrogram(selected_combo, classes, dsp_package, num_rows, represent
             
         else:
             for i in np.arange(start_index, end_index):
-                S              = melSpectrograms[i - start_index]
-                loaded_data[i] = S / S.max()
-
+                S                 = melSpectrograms[i - start_index]
+                loaded_data[i][0] = S / S.max()
+                loaded_data[i][1] = loaded_data[i][0]
+                loaded_data[i][2] = loaded_data[i][0]
+ 
         start_index  = start_index + snippet_dict[original_file_name][0]
     # =============================================================================
     #loaded_data = loaded_data.reshape((len(loaded_data), np.prod(loaded_data.shape[1:])), order = 'F')      

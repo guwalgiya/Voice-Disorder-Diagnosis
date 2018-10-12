@@ -12,7 +12,7 @@ def resultsAnalysis(myModel, test_combo, test_data, test_label_1, test_augment_a
     predicted_label_3 = []
     predicted_label   = myModel.predict(test_data)
     for i in range(len(predicted_label)):
-        if predicted_label[i][0] > predicted_label[i][1]:
+        if predicted_label[i][0] <= theta:
             predicted_label_1.append(0)
             predicted_label_3.append("Normal")
         else:
@@ -49,12 +49,11 @@ def resultsAnalysis(myModel, test_combo, test_data, test_label_1, test_augment_a
             
 
             # ==============================================================================
-            if (cur_label == "Pathol" and max_weight_index == 0) or (cur_label == "Normal" and max_weight_index == 1):
-            #if cur_label == "Normal" and max_weight_index == 1:
+            #if (cur_label == "Pathol" and max_weight_index == 0) or (cur_label == "Normal" and max_weight_index == 1):
+            if cur_label == "Normal" and max_weight_index == 1:
                 print('----------------------------')
                 print(cur_name, cur_label, cur_classes_weight)
-                #for j in range(cur_amount):
-                    #print(j + 1, predicted_label[snippet_index + j])
+
 
             # ==============================================================================
             # Loop Update
