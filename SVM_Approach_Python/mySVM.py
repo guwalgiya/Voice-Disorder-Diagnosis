@@ -19,7 +19,7 @@ def method1(train_data, train_label2, validate_data, validate_label2, test_data,
     
     for c in c_values:
         #, class_weight = train_class_weight
-        cur_svm         = svm.LinearSVC(C = c, verbose = 0, class_weight = train_class_weight) 
+        cur_svm         = svm.LinearSVC(C = c, verbose = 0, class_weight = train_class_weight, max_iter = 100000) 
         #cur_svm        = svm.SVC(C = c, kernel = 'rbf', class_weight= train_class_weight)
         cur_svm.fit(train_data, train_label2)
 
