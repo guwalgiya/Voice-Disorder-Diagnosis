@@ -28,7 +28,7 @@ import os
 # Dataset Initialization
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 classes            = ["Normal", "Pathol"]
-dataset_name       = "KayPentax"
+dataset_name       = "Spanish"
 dataset_path       = "/home/hguan/7100-Master-Project/Dataset-" + dataset_name
 num_folds          = 5   
 train_percent      = 90
@@ -60,7 +60,7 @@ input_name          = "MelSpectrogram"
 encoding_dimension = 2
 encoder_layer      = 9
 decoder_layer      = 9
-epoch_limit        = 1
+epoch_limit        = 10000000
 batch_auto         = 1024
 shuffle_choice     = True
 loss_function      = 'mean_squared_error'
@@ -107,7 +107,9 @@ data                 = pickle.load(temp_file_1)
 aug_dict             = pickle.load(temp_file_2)
 unaug_dict           = pickle.load(temp_file_3)
 
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction = 0.33)
 
+sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 # =============================================================================
 for fold_index in range(num_folds):
     print("---> Now Fold ", fold_index + 1,  " ----------------------------")
@@ -142,7 +144,9 @@ for fold_index in range(num_folds):
     train_data,    _,  _, train_label_3,    train_dist,    _                       = train_package
     validate_data, _,  _, validate_label_3, validate_dist, validate_augment_amount = validate_package
     test_data,     _,  _, test_label_3,     test_dist,     test_augment_amount     = test_package
-
+    print(train_dist)
+    print(validate_dist)
+    print(test_dist)
     
     for i in range(num_rows_1):
 
@@ -180,6 +184,7 @@ for fold_index in range(num_folds):
     best_file_acc    = 0
     possible_encoder = []
     result_pack      = None
+    print("Encoder is trained")
     for dim in [2, 4, 8, 16, 32, 64, 128, 256,512, 1024]:
         index = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024].index(dim)
         best_encoder = Model(inputs  = best_autoencoder.inputs, outputs = best_autoencoder.layers[encodeLayer_index - index].output)
@@ -198,6 +203,7 @@ for fold_index in range(num_folds):
         
         # =============================================================================
         file_acc, file_con_mat, snippet_acc, snippet_con_mat = fold_result_package
+        print(dim, file_acc)
         if file_acc > best_file_acc:
             best_file_acc = file_acc
             result_pack   = fold_result_package
@@ -205,8 +211,7 @@ for fold_index in range(num_folds):
         possible_encoder.append([dim, file_acc, best_encoder, train_data_encoded, validate_data_encoded, test_data_encoded])
 
     possible_encoder.sort(key = lambda possible_encoder: possible_encoder[1], reverse = True)
-    for i in range(len(possible_encoder)):
-        print(possible_encoder[i][0], possible_encoder[i][1])
+
     #train_data_encoded    = np.concatenate((possible_encoder[0][3], possible_encoder[1][3], possible_encoder[2][3]), axis = 1)
     #validate_data_encoded = np.concatenate((possible_encoder[0][4], possible_encoder[1][4], possible_encoder[2][4]), axis = 1)
     #test_data_encoded     = np.concatenate((possible_encoder[0][5], possible_encoder[1][5], possible_encoder[2][5]), axis = 1)

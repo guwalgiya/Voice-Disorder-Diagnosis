@@ -61,7 +61,7 @@ def main(input_vector_length, x_train, x_validate, arch_bundle, train_bundle):
                               callbacks       = [early_stopping, model_checkpoint],
                               shuffle         = shuffle_choice,
                               validation_data = (x_validate, x_validate),
-                              verbose         = 1)
+                              verbose         = 0)
 
 
     # =============================================================================
