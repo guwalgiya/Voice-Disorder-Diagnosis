@@ -39,15 +39,15 @@ input_name  = "MelSpectrogram"
 
 # =============================================================================
 # Dsp Initialization
-fs             = 16000
-snippet_length = 500    #in milliseconds
-snippet_hop    = 100    #in ms
-fft_length     = 512
-fft_hop        = 128
-mel_length     = 128
-num_MFCCs      = 20
-num_rows       = mel_length
-dsp_package    = [fs, snippet_length, snippet_hop, fft_length, fft_hop]
+fs                  = 16000
+snippet_length      = 500  #in milliseconds
+snippet_hop         = 100 #in ms
+mel_length          = 128
+bin_size            = 500
+block_size          = 512
+hop_size            = 128
+package             = [snippet_length, snippet_hop, block_size, hop_size, mel_length]
+input_vector_length = mel_length * math.ceil(snippet_length / 1000 * fs / hop_size)
 
 
 # =============================================================================
