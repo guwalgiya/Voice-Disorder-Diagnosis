@@ -28,9 +28,9 @@ def main(myModel, test_combo, test_data, test_label2, test_augment_amount, class
             #print(classes_weight)
             #print(max_weight_index)
 
-            if (label == "Pathol" and max_weight_index == 0) or (label == "Normal" and max_weight_index == 1):
+            #if (label == "Pathol" and max_weight_index == 0) or (label == "Normal" and max_weight_index == 1):
             #if label == "Normal":
-                print(name, label, classes_weight)
+                #print(name, label, classes_weight)
                 
             index = index  + amount
             voted_labels.append(classes[max_weight_index])

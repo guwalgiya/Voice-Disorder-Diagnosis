@@ -28,6 +28,7 @@ sess        = tf.Session(config = tf.ConfigProto(gpu_options = gpu_options))
 # Environment Setup
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 dataset_path                       = "/home/hguan/7100-Master-Project/Dataset-KayPentax"
+dataset_path_support               = "/home/hguan/7100-Master-Project/Dataset-Spanish"
 slash                              = "/"
 #dataset_path                      = "C:\\Master Degree\\7100 - Master Project\\Dataset - KayPentax"
 #slash                             = "\\"
@@ -60,7 +61,7 @@ input_name          = "MelSpectrogram"
 # Deep Learning Initialization
 fold_num      = 1
 train_percent = 90
-epoch_limit   = 100000
+epoch_limit   = 10000000
 batch_size    = 1024
 num_channel   = 4
 input_shape   = (int(num_rows / num_channel), ceil(snippet_length / 1000 * fs / fft_hop), num_channel)
@@ -93,17 +94,23 @@ for train_validate_index, test_index in pathol_split:
 
 
 # =============================================================================
-# Loading Data
 data_file_name       = input_name + "_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" + "_block" + str(fft_length) + "_hop" + str(fft_hop) + "_mel" + str(mel_length)
-aug_dict_file_name   = "Dictionary_"    + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" 
+aug_dict_file_name   = "Dictionary_"    + str(snippet_length) + "ms_" + str(snippet_hop) + "ms"                   
 unaug_dict_file_name = "Dictionary_"    + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" + "_unaugmented" 
-temp_file_1          = open(dataset_path + slash + data_file_name       + '.pickle', 'rb')  
-temp_file_2          = open(dataset_path + slash + aug_dict_file_name   + '.pickle', 'rb')
-temp_file_3          = open(dataset_path + slash + unaug_dict_file_name + '.pickle', 'rb')
-data                 = pickle.load(temp_file_1)
-aug_dict             = pickle.load(temp_file_2)
-unaug_dict           = pickle.load(temp_file_3)
 
+temp_file_1          = open(dataset_path    + '/' + data_file_name       + '.pickle', 'rb')  
+temp_file_2          = open(dataset_path    + '/' + aug_dict_file_name   + '.pickle', 'rb')
+temp_file_3          = open(dataset_path    + '/' + unaug_dict_file_name + '.pickle', 'rb')
+data_1               = pickle.load(temp_file_1)
+aug_dict_1           = pickle.load(temp_file_2)
+unaug_dict_1         = pickle.load(temp_file_3)
+
+temp_file_1          = open(dataset_path_support + '/' + data_file_name       + '.pickle', 'rb')  
+temp_file_2          = open(dataset_path_support + '/' + aug_dict_file_name   + '.pickle', 'rb')
+temp_file_3          = open(dataset_path_support + '/' + unaug_dict_file_name + '.pickle', 'rb')
+data_2               = pickle.load(temp_file_1)
+aug_dict_2           = pickle.load(temp_file_2)
+unaug_dict_2         = pickle.load(temp_file_3)
 
 # =============================================================================
 # Results Initialization
@@ -116,6 +123,12 @@ file_results0     = []
 snippet_results0  = []
 file_con_mat0     = np.array([[0,0],[0,0]])
 snippet_con_mat0  = np.array([[0,0],[0,0]])
+
+
+# =============================================================================
+name_class_combo_support = getCombination.main(dataset_path_support, classes)
+train_combo_support      = np.asarray(name_class_combo_support)
+train_package_support    = loadMelSpectrogram(train_combo_support, classes, dsp_package, num_rows, "melSpec", data_2, True,  aug_dict_2)
 
 
 # ==============================================================================
@@ -139,19 +152,30 @@ for fold_num in range(num_folds):
     train_combo    = normal_train_combo    + pathol_train_combo
     validate_combo = normal_validate_combo + pathol_validate_combo
     test_combo     = normal_test_combo     + pathol_test_combo
-
-
-    # ==============================================================================
-    train_package     = loadMelSpectrogram(train_combo,    classes, dsp_package, num_rows, "melSpec", data, True,  aug_dict)
-    validate_package  = loadMelSpectrogram(validate_combo, classes, dsp_package, num_rows, "melSpec", data, False, unaug_dict)   
-    test_package      = loadMelSpectrogram(test_combo,     classes, dsp_package, num_rows, "melSpec", data, False, unaug_dict)
-    
+   
 
     # ==============================================================================
-    train_data,    _,            train_label_2,    train_label_3,    train_dist,    _                   = train_package
+    train_package         = loadMelSpectrogram(train_combo,         classes, dsp_package, num_rows, "melSpec", data_1, True,  aug_dict_1)
+    validate_package      = loadMelSpectrogram(validate_combo,      classes, dsp_package, num_rows, "melSpec", data_1, False, unaug_dict_1)   
+    test_package          = loadMelSpectrogram(test_combo,          classes, dsp_package, num_rows, "melSpec", data_1, False, unaug_dict_1)
+
+    # ==============================================================================
+    train_data_main,    _,            train_label_2,    train_label_3,    train_dist,    _                   = train_package
     validate_data, _,            validate_label_2, validate_label_3, validate_dist, _                   = validate_package
     test_data,     test_label_1, test_label_2,     test_label_3,     test_dist,     test_augment_amount = test_package
     
+    # ==============================================================================
+    train_data_support, _, train_label_2_support, train_label_3_support, train_dist_support, _ = train_package_support
+    print(train_data_main.shape)
+    print(train_data_support.shape)
+
+    # ==============================================================================
+    train_data    = np.zeros((len(train_data_main) + len(train_data_support), 128, 63), dtype = 'float32')
+    train_data[0 : len(train_data_main)] = train_data_main
+    train_data[len(train_data_main) : ] = train_data_support
+    train_label_2 = np.concatenate((train_label_2,   train_label_2_support), axis = 0)
+    train_label_3 = np.concatenate((train_label_3,   train_label_3_support), axis = 0)
+
 
     # ==============================================================================
     train_data    = train_data.reshape(train_data.shape[0],       num_channel, int(train_data.shape[1]    / num_channel), train_data.shape[2])   
@@ -163,13 +187,16 @@ for fold_num in range(num_folds):
     train_data    = np.moveaxis(train_data,    1, -1)
     validate_data = np.moveaxis(validate_data, 1, -1)
     test_data     = np.moveaxis(test_data,     1, -1)
+    print(train_data.shape)
+    print(validate_data.shape)
+    print(test_data.shape)
 
 
     # ==============================================================================
     _, history = CNN.main(train_data, train_label_2, train_label_3, validate_data, validate_label_2, validate_label_3, epoch_limit, batch_size, input_shape, monitor)
     best_CNN   = load_model(best_model_name)
     
-    
+
     # ==============================================================================
     # save the plot of validation loss
     plt.plot(history.history[monitor])
@@ -197,8 +224,8 @@ for fold_num in range(num_folds):
     possible_encoder = []
     best_result_pack = None
     print("Feature Extractor is trained")
-    for dim in [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]:
-        index     = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024].index(dim)
+    for dim in [2, 4, 8, 16, 32, 64, 128, 256]:
+        index     = [2, 4, 8, 16, 32, 64, 128, 256].index(dim)
         extractor = Model(inputs  = best_CNN.inputs, outputs = best_CNN.layers[-1 - index].output)
 
         
@@ -228,7 +255,7 @@ for fold_num in range(num_folds):
     print(cur_snippet_acc)
     print(cur_file_con_mat)
     print(cur_snippet_con_mat)
-
+    
     # =============================================================================
     file_results.append(cur_file_acc)
     snippet_results.append(cur_snippet_acc)
@@ -243,6 +270,10 @@ for fold_num in range(num_folds):
     os.remove("best_model_this_fold.hdf5")
     print("Memory Cleared, Saved Model Removed")
 
+    del train_data
+    del train_data_CNNed
+    del validate_data
+    del test_data
 
     # ==============================================================================
     # Predict the future

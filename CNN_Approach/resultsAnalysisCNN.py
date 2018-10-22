@@ -49,10 +49,10 @@ def resultsAnalysis(myModel, test_combo, test_data, test_label_1, test_augment_a
             
 
             # ==============================================================================
-            if (cur_label == "Pathol" and max_weight_index == 0) or (cur_label == "Normal" and max_weight_index == 1):
+            #if (cur_label == "Pathol" and max_weight_index == 0) or (cur_label == "Normal" and max_weight_index == 1):
             #if cur_label == "Normal" and max_weight_index == 1:
-                print('----------------------------')
-                print(cur_name, cur_label, cur_classes_weight)
+                #print('----------------------------')
+                #print(cur_name, cur_label, cur_classes_weight)
                 #for j in range(cur_amount):
                     #print(j + 1, predicted_label[snippet_index + j])
 

@@ -20,15 +20,13 @@ import mySVM
 import pickle
 import os
 
-#gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.4)
-
-#sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
-
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction = 0.4)
+sess        = tf.Session(config = tf.ConfigProto(gpu_options = gpu_options))
 # =============================================================================
 # Dataset Initialization
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 classes            = ["Normal", "Pathol"]
-dataset_name       = "Spanish"
+dataset_name       = "KayPentax"
 dataset_path       = "/home/hguan/7100-Master-Project/Dataset-" + dataset_name
 num_folds          = 5   
 train_percent      = 90
@@ -46,7 +44,7 @@ fft_length          = 512
 fft_hop             = 128
 mel_length          = 128
 num_MFCCs           = 20
-num_rows_1          = num_MFCCs
+num_rows_1          = 20
 dsp_package         = [fs, snippet_length, snippet_hop, fft_length, fft_hop]
 num_rows_2          = mel_length
 #input_vector_length = mel_length * math.ceil(snippet_length / 1000 * fs / fft_hop)
@@ -57,10 +55,10 @@ input_name          = "MelSpectrogram"
 
 # =============================================================================
 # Autoencoder Initialization
-encoding_dimension = 2
-encoder_layer      = 9
-decoder_layer      = 9
-epoch_limit        = 10000000
+encoding_dimension = 32
+encoder_layer      = 5
+decoder_layer      = 5
+epoch_limit        = 100000
 batch_auto         = 1024
 shuffle_choice     = True
 loss_function      = 'mean_squared_error'
@@ -107,9 +105,7 @@ data                 = pickle.load(temp_file_1)
 aug_dict             = pickle.load(temp_file_2)
 unaug_dict           = pickle.load(temp_file_3)
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction = 0.33)
 
-sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 # =============================================================================
 for fold_index in range(num_folds):
     print("---> Now Fold ", fold_index + 1,  " ----------------------------")
@@ -173,7 +169,7 @@ for fold_index in range(num_folds):
     # =============================================================================
     _, history, encodeLayer_index = autoencoder.main(input_vector_length_1, train_data, test_data, arch_bundle_1, train_bundle_auto)
     best_autoencoder              = load_model(best_model_name)
-    
+    print(best_autoencoder.summary())
     
     # ===============================================================================
     # save the plot of validation loss
@@ -185,8 +181,8 @@ for fold_index in range(num_folds):
     possible_encoder = []
     result_pack      = None
     print("Encoder is trained")
-    for dim in [2, 4, 8, 16, 32, 64, 128, 256,512, 1024]:
-        index = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024].index(dim)
+    for dim in [32, 64, 128, 256,512, 1024]:
+        index = [32, 64, 128, 256, 512, 1024].index(dim)
         best_encoder = Model(inputs  = best_autoencoder.inputs, outputs = best_autoencoder.layers[encodeLayer_index - index].output)
         # ===============================================================================
         train_data_encoded     = best_encoder.predict(train_data)
@@ -208,9 +204,8 @@ for fold_index in range(num_folds):
             best_file_acc = file_acc
             result_pack   = fold_result_package
             best_dim      = dim
-        possible_encoder.append([dim, file_acc, best_encoder, train_data_encoded, validate_data_encoded, test_data_encoded])
 
-    possible_encoder.sort(key = lambda possible_encoder: possible_encoder[1], reverse = True)
+    #possible_encoder.sort(key = lambda possible_encoder: possible_encoder[1], reverse = True)
 
     #train_data_encoded    = np.concatenate((possible_encoder[0][3], possible_encoder[1][3], possible_encoder[2][3]), axis = 1)
     #validate_data_encoded = np.concatenate((possible_encoder[0][4], possible_encoder[1][4], possible_encoder[2][4]), axis = 1)

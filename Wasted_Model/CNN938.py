@@ -28,9 +28,15 @@ def main(train_data, train_label, validate_data, validate_label, epoch_limit, ba
     CNN.add(Flatten())
     CNN.add(Dense(1024, activation = 'relu'))
     CNN.add(Dense(1024, activation = 'relu'))
-    #CNN.add(Dense(1024, activation = 'relu'))
-    #CNN.add(Dense(64,   activation = 'relu',    kernel_initializer = RandomNormal(mean=0.0, stddev=0.05, seed=None)))
-    CNN.add(Dense(1,    activation = 'sigmoid'))
+    CNN.add(Dense(512, activation = 'relu'))
+    CNN.add(Dense(256, activation = 'relu'))
+    CNN.add(Dense(128, activation = 'relu'))
+    CNN.add(Dense(64, activation = 'relu'))
+    CNN.add(Dense(32, activation = 'relu'))
+    CNN.add(Dense(16, activation = 'relu'))
+    CNN.add(Dense(8, activation = 'relu'))
+    CNN.add(Dense(4, activation = 'relu'))
+    CNN.add(Dense(2,    activation = 'softmax'))
 
 
     # =============================================================================
@@ -43,10 +49,12 @@ def main(train_data, train_label, validate_data, validate_label, epoch_limit, ba
     train_class_weight     = {}
     for a_class in np.unique(train_label):
         train_class_weight[a_class] = train_class_weight_raw[np.unique(train_label).tolist().index(a_class)]
-
+    train_class_weight[0] = train_class_weight.pop("Normal")
+    train_class_weight[1] = train_class_weight.pop("Pathol")
+    print(train_class_weight)
     
     # =============================================================================
-    early_stopping = EarlyStopping(monitor = monitor, patience = 10, verbose = 0,  mode = 'min', min_delta = 0.001)
+    early_stopping = EarlyStopping(monitor = monitor, patience = 50, verbose = 0,  mode = 'min', min_delta = 0.001)
 
 
     # =============================================================================
