@@ -142,7 +142,7 @@ for fold_num in range(num_folds):
 
 
     # ==============================================================================
-    train_package     = loadMelSpectrogram(train_combo,    classes, dsp_package, num_rows, "melSpec", data, True,  aug_dict)
+    train_package     = loadMelSpectrogram(train_combo,    classes, dsp_package, num_rows, "melSpec", data, False, unaug_dict)
     validate_package  = loadMelSpectrogram(validate_combo, classes, dsp_package, num_rows, "melSpec", data, False, unaug_dict)   
     test_package      = loadMelSpectrogram(test_combo,     classes, dsp_package, num_rows, "melSpec", data, False, unaug_dict)
     

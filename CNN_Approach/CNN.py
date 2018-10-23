@@ -18,7 +18,7 @@ def main(train_data, train_label_2, train_label_3, validate_data, validate_label
 
     # =============================================================================
     CNN = Sequential()
-    CNN.add(Conv2DTranspose(9,  kernel_size = (5, 5), strides = (1, 1), activation = 'relu', input_shape = input_shape))
+    CNN.add(Conv2DTranspose(5,  kernel_size = (5, 5), strides = (1, 1), activation = 'relu', input_shape = input_shape))
     CNN.add(Conv2DTranspose(9,  kernel_size = (3, 3), strides = (1, 1),  activation = 'relu'))
     CNN.add(AveragePooling2D(pool_size = (2, 2)))
     
@@ -39,7 +39,7 @@ def main(train_data, train_label_2, train_label_3, validate_data, validate_label
 
     # =============================================================================
     CNN.compile(loss      = binary_crossentropy,
-                optimizer = Adam(lr = 0.0001, beta_1 = 0.9, beta_2 = 0.999),
+                optimizer = Adam(lr = 0.000001, beta_1 = 0.9, beta_2 = 0.999),
                 metrics   = ['acc'])
 
     # =============================================================================
@@ -52,7 +52,7 @@ def main(train_data, train_label_2, train_label_3, validate_data, validate_label
     print(train_class_weight)
     
     # =============================================================================
-    early_stopping = EarlyStopping(monitor = monitor, patience = 10, verbose = 0,  mode = 'min', min_delta = 0.001)
+    early_stopping = EarlyStopping(monitor = monitor, patience = 30, verbose = 0,  mode = 'min', min_delta = 0.001)
 
 
     # =============================================================================
