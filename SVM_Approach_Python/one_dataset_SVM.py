@@ -10,12 +10,12 @@ from loadMFCCs import loadMFCCs
 
 # =============================================================================
 # Dataset Initialization
-classes = ['Normal','Pathol']
+classes        = ['Normal','Pathol']
 dataset_path   = "/home/hguan/7100-Master-Project/Dataset-Spanish"
 train_percent      = 90
 num_folds          = 5
 input_name         = "MFCCs"
-slash    = '/'
+slash          = '/'
 
 
 # =============================================================================
@@ -140,9 +140,9 @@ for fold_num in range(num_folds):
 
     # =============================================================================================
     cur_result_package = mySVM.method1(train_data_normalized,    train_label_3, 
-                                                                          validate_data_normalized, validate_label_3, 
-                                                                          test_data_normalized,     test_label_3,
-                                                                          test_combo,               test_augment_amount)
+                                       validate_data_normalized, validate_label_3, 
+                                       test_data_normalized,     test_label_3,
+                                       test_combo,               test_augment_amount)
     cur_file_acc, cur_file_con_mat, cur_snippet_acc, cur_snippet_con_mat = cur_result_package
     print(cur_file_acc, cur_snippet_acc)
     print(cur_file_con_mat)

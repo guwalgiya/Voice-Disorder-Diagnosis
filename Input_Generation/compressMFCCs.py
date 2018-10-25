@@ -20,7 +20,9 @@ def compressMFCCs(dataset_path, classes, dsp_package, combo):
 
         # =============================================================================
         original_file_name = a_combo[0]
-
+        
+        if original_file_name in ["apa_p", "araa_p", "arba_p", "cpca_p", "cpra_p", "fgaa_p", "jaaa_p", "jgsa_p", "jmca_p"]:
+            a_combo[0] = a_combo[0][0 : -2]
         # =============================================================================
         sub_folder   = a_combo[1] + "_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms"
         MFCCs_folder = a_combo[0] + "_MFCCs_block" + str(fft_length) + "_hop" + str(fft_hop) 
@@ -37,9 +39,12 @@ def compressMFCCs(dataset_path, classes, dsp_package, combo):
         for MFCCs_name in MFCCs_name_list:
             MFCCs          = np.loadtxt(MFCCs_path + "/" + MFCCs_name)
             snippet_amount = snippet_amount + 1
-            data.append([original_file_name, MFCCs_name.split('_')[1], MFCCs])
+            if (original_file_name in ["apa_p", "araa_p", "arba_p", "cpca_p", "cpra_p", "fgaa_p", "jaaa_p", "jgsa_p", "jmca_p"]):
+                data.append([original_file_name, MFCCs_name.split('_')[1], MFCCs])
+            else:
+                data.append([original_file_name, MFCCs_name.split('_')[1], MFCCs])
     
-
+        print(a_combo)
     print(len(data))
         
     # =============================================================================

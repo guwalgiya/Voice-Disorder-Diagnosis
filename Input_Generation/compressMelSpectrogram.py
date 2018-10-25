@@ -30,6 +30,10 @@ def compressMelSpectrogram(dataset_path, classes, dsp_package, augmented, combo)
         label_2[class_index]  = 1          
         
         label_3               = a_combo[1]
+        
+
+        if original_file_name in ["apa_p", "araa_p", "arba_p", "cpca_p", "cpra_p", "fgaa_p", "jaaa_p", "jgsa_p", "jmca_p"]:
+            a_combo[0] = a_combo[0][0 : -2]
 
         # =============================================================================
         if augmented:
@@ -50,11 +54,18 @@ def compressMelSpectrogram(dataset_path, classes, dsp_package, augmented, combo)
         # =============================================================================
         snippet_amount     = 0
         for spectrogram_name in spectrogram_name_list:
-            #melspectrogram = np.loadtxt(spectrogram_path + "/" + spectrogram_name)
+            # melspectrogram = np.loadtxt(spectrogram_path + "/" + spectrogram_name)
             snippet_amount = snippet_amount + 1
-            #data.append([original_file_name, spectrogram_name.split('_')[1], melspectrogram])
+            # if (a_combo[0] in ["apa", "araa", "arba", "cpca", "cpra", "fgaa", "jaaa", "jgsa", "jmca"]) and (a_combo[1] == "Pathol"):
+            #     data.append([original_file_name + "_P", spectrogram_name.split('_')[1], melspectrogram])
+            # else:
+            #     data.append([original_file_name,        spectrogram_name.split('_')[1], melspectrogram])
 
-        snippet_amount_dict[original_file_name] = [snippet_amount, label_1, label_2, label_3]
+
+        if (a_combo[0] in ["apa", "araa", "arba", "cpca", "cpra", "fgaa", "jaaa", "jgsa", "jmca"]) and (a_combo[1] == "Pathol"):      
+            snippet_amount_dict[original_file_name] = [snippet_amount, label_1, label_2, label_3]
+        else:
+            snippet_amount_dict[original_file_name]        = [snippet_amount, label_1, label_2, label_3]
         print(original_file_name, label_1, snippet_amount)
     
 
@@ -62,11 +73,11 @@ def compressMelSpectrogram(dataset_path, classes, dsp_package, augmented, combo)
         
     # =============================================================================
     if augmented:
-        # data_file_name = "MelSpectrogram_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" +                  "_block" + str(fft_length) + "_hop" + str(fft_hop) + "_mel" + str(mel_length)
+        #data_file_name = "MelSpectrogram_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" +                  "_block" + str(fft_length) + "_hop" + str(fft_hop) + "_mel" + str(mel_length)
         dict_file_name = "Dictionary_"     + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" +                  "_block" + str(fft_length) + "_hop" + str(fft_hop) + "_mel" + str(mel_length)
         #temp_file_0    = open(dataset_path + '/' + data_file_name + '.pickle', 'wb')
         #pickle.dump(data, temp_file_0)
-        #print('data is saved')
+        print('data is saved')
 
     else:
         #data_file_name = "MelSpectrogram_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" + "_unaugmented" + "_block" + str(fft_length) + "_hop" + str(fft_hop) + "_mel" + str(mel_length)

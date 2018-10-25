@@ -13,8 +13,8 @@ import mySVM
 # =============================================================================
 # Dataset Initialization
 classes            = ["Normal", "Pathol"]
-dataset_path_train = "/home/hguan/7100-Master-Project/Dataset-Spanish"
-dataset_path_test  = "/home/hguan/7100-Master-Project/Dataset-KayPentax"
+dataset_path_train = "/home/hguan/7100-Master-Project/Dataset-KayPentax"
+dataset_path_test  = "/home/hguan/7100-Master-Project/Dataset-Spanish"
 train_percent      = 90
 validate_percent   = 10
 test_percent       = 0
