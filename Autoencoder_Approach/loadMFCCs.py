@@ -3,7 +3,7 @@ import numpy   as     np
 import librosa
 import math
 
-def loadMFCCs(selected_combo, classes, dsp_package, dataset_path, data, augmented, snippet_dict):
+def loadMFCCs(selected_combo, classes, dsp_package, data, augmented, snippet_dict):
 
     # =============================================================================
     fs, snippet_length, snippet_hop, fft_length, fft_hop, num_features = dsp_package

@@ -3,7 +3,7 @@ import numpy   as     np
 import librosa
 import math
 
-def loadMFCCs(selected_combo, classes, dsp_package, dataset_path, data, augmented, snippet_dict):
+def loadMFCCs(selected_combo, classes, dsp_package,  data, augmented, snippet_dict):
 
     # =============================================================================
     fs, snippet_length, snippet_hop, fft_length, fft_hop, num_features = dsp_package
@@ -50,9 +50,9 @@ def loadMFCCs(selected_combo, classes, dsp_package, dataset_path, data, augmente
         
         # =============================================================================
         if augmented:
-            MFCCs = [data_point[2] for data_point in data if (data_point[0] == original_file_name)]
+            MFCCs = [data_point[2][0 : num_features] for data_point in data if (data_point[0] == original_file_name)]
         else:
-            MFCCs = [data_point[2] for data_point in data if (data_point[0] == original_file_name and data_point[1] == "N0.0")]
+            MFCCs = [data_point[2][0 : num_features] for data_point in data if (data_point[0] == original_file_name and data_point[1] == "N0.0")]
 
         # =============================================================================
         for i in np.arange(start_index, end_index):

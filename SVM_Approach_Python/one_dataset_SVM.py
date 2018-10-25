@@ -8,26 +8,28 @@ import os
 import pickle
 from loadMFCCs import loadMFCCs
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
 # =============================================================================
 # Dataset Initialization
 classes = ['Normal','Pathol']
-dataset_path   = "/home/hguan/7100-Master-Project/Dataset-KayPentax"
+dataset_path   = "/home/hguan/7100-Master-Project/Dataset-Spanish"
 train_percent      = 90
 num_folds          = 5
 input_name         = "MFCCs"
 slash    = '/'
+
+
 # =============================================================================
 # Dsp Initialization
 fs                  = 16000
 snippet_length      = 500  #in milliseconds
 snippet_hop         = 100 #in ms
 fft_length          = 512
-fft_hop            = 128
+fft_hop             = 128
 input_vector_length = 40
 mel_length          = 128
 dsp_package         = [fs, snippet_length, snippet_hop, fft_length, fft_hop, input_vector_length]
+
+
 # =============================================================================
 # Get
 name_class_combo    = getCombination.main(dataset_path, classes)
@@ -36,8 +38,8 @@ kf_spliter          = KFold(n_splits = num_folds, shuffle = True)
 index_array         = np.arange(len(name_class_combo))
 file_results        = []
 snippet_results     = []
-file_con_mat  = np.array([[0,0],[0,0]])
-snippet_con_mat  = np.array([[0,0],[0,0]])
+file_con_mat        = np.array([[0,0],[0,0]])
+snippet_con_mat     = np.array([[0,0],[0,0]])
 
 # =============================================================================
 # Loading Data
@@ -98,31 +100,45 @@ for fold_num in range(num_folds):
     train_combo    = normal_train_combo    + pathol_train_combo
     validate_combo = normal_validate_combo + pathol_validate_combo
     test_combo     = normal_test_combo     + pathol_test_combo
-
-    # load all the snippet's spectrogram's (already saved before)
-    train_package     = loadMFCCs(train_combo,    classes, dsp_package, dataset_path, MFCCs_data, True,  aug_dict)   
-    validate_package  = loadMFCCs(validate_combo, classes, dsp_package, dataset_path, MFCCs_data, False, unaug_dict)   
-    test_package      = loadMFCCs(test_combo,     classes, dsp_package, dataset_path, MFCCs_data, False, unaug_dict)
     
+
+    # =============================================================================================
+    # load all the snippet's spectrogram's (already saved before)
+    train_package     = loadMFCCs(train_combo,    classes, dsp_package, MFCCs_data, True,  aug_dict)   
+    validate_package  = loadMFCCs(validate_combo, classes, dsp_package, MFCCs_data, False, unaug_dict)   
+    test_package      = loadMFCCs(test_combo,     classes, dsp_package, MFCCs_data, False, unaug_dict)
+    
+
+    # =============================================================================================
     train_data,    _,    _, train_label_3,     train_dist,    _                         = train_package
     validate_data, _,    _, validate_label_3,  validate_dist, validate_augment_amount,  = validate_package
     test_data,     _,    _, test_label_3,      test_dist,     test_augment_amount,      = test_package
     
+
+    # =============================================================================================
     print(train_dist)
     print(validate_dist)
     print(test_dist)
-    #print(validate_augment_amount, test_augment_amount)
+
+
+    # =============================================================================================
     train_data_normalized    = np.zeros((train_data.shape))
     validate_data_normalized = np.zeros((validate_data.shape))
     test_data_normalized     = np.zeros((test_data.shape))
-
     for i in range(input_vector_length):      
         mean                    = np.mean(train_data[:, i].flatten().tolist() + validate_data[:, i].flatten().tolist())
         std                     = np.std(train_data[:, i].flatten().tolist()  + validate_data[:, i].flatten().tolist())
-        train_data_normalized[:, i]        = (train_data[:, i]    - mean) / std
-        validate_data_normalized[:, i]     = (validate_data[:, i] - mean) / std
-        test_data_normalized[:, i]         = (test_data[:, i]     - mean) / std
+        max_0                   = np.max(train_data[:, i].flatten().tolist()  + validate_data[:, i].flatten().tolist())
+        min_0                   = np.min(train_data[:, i].flatten().tolist()  + validate_data[:, i].flatten().tolist())
+        #print("feature", i + 1)
+        #print(mean, std, max_0, min_0)
+        train_data_normalized[:, i]        = (train_data[:, i]    - min_0)  / (max_0 - min_0)
+        validate_data_normalized[:, i]     = (validate_data[:, i] - min_0)  / (max_0 - min_0)
+        test_data_normalized[:, i]         = (test_data[:, i]     - min_0)  / (max_0 - min_0)
+        np.clip(test_data_normalized[:, i], 0, 1)
 
+
+    # =============================================================================================
     cur_result_package = mySVM.method1(train_data_normalized,    train_label_3, 
                                                                           validate_data_normalized, validate_label_3, 
                                                                           test_data_normalized,     test_label_3,

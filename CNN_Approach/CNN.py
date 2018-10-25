@@ -65,7 +65,7 @@ def main(train_data, train_label_2, train_label_3, validate_data, validate_label
                     batch_size      = batch_size,
                     epochs          = epoch_limit,
                     callbacks       = [early_stopping, model_checkpoint],
-                    class_weight    = train_class_weight,
+                    #class_weight    = train_class_weight,
                     validation_data = (validate_data, validate_label_2),
                     verbose         = 0,
                     shuffle         = True)

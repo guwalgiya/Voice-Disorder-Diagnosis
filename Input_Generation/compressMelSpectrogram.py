@@ -50,9 +50,9 @@ def compressMelSpectrogram(dataset_path, classes, dsp_package, augmented, combo)
         # =============================================================================
         snippet_amount     = 0
         for spectrogram_name in spectrogram_name_list:
-            melspectrogram = np.loadtxt(spectrogram_path + "/" + spectrogram_name)
+            #melspectrogram = np.loadtxt(spectrogram_path + "/" + spectrogram_name)
             snippet_amount = snippet_amount + 1
-            data.append([original_file_name, spectrogram_name.split('_')[1], melspectrogram])
+            #data.append([original_file_name, spectrogram_name.split('_')[1], melspectrogram])
 
         snippet_amount_dict[original_file_name] = [snippet_amount, label_1, label_2, label_3]
         print(original_file_name, label_1, snippet_amount)
@@ -62,11 +62,11 @@ def compressMelSpectrogram(dataset_path, classes, dsp_package, augmented, combo)
         
     # =============================================================================
     if augmented:
-        data_file_name = "MelSpectrogram_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" +                  "_block" + str(fft_length) + "_hop" + str(fft_hop) + "_mel" + str(mel_length)
+        # data_file_name = "MelSpectrogram_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" +                  "_block" + str(fft_length) + "_hop" + str(fft_hop) + "_mel" + str(mel_length)
         dict_file_name = "Dictionary_"     + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" +                  "_block" + str(fft_length) + "_hop" + str(fft_hop) + "_mel" + str(mel_length)
-        temp_file_0    = open(dataset_path + '/' + data_file_name + '.pickle', 'wb')
-        pickle.dump(data, temp_file_0)
-        print('data is saved')
+        #temp_file_0    = open(dataset_path + '/' + data_file_name + '.pickle', 'wb')
+        #pickle.dump(data, temp_file_0)
+        #print('data is saved')
 
     else:
         #data_file_name = "MelSpectrogram_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" + "_unaugmented" + "_block" + str(fft_length) + "_hop" + str(fft_hop) + "_mel" + str(mel_length)

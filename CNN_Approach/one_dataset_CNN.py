@@ -27,7 +27,7 @@ sess        = tf.Session(config = tf.ConfigProto(gpu_options = gpu_options))
 # =============================================================================
 # Environment Setup
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-dataset_path                       = "/home/hguan/7100-Master-Project/Dataset-KayPentax"
+dataset_path                       = "/home/hguan/7100-Master-Project/Dataset-Spanish"
 slash                              = "/"
 #dataset_path                      = "C:\\Master Degree\\7100 - Master Project\\Dataset - KayPentax"
 #slash                             = "\\"

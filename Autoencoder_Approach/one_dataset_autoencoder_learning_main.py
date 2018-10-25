@@ -26,7 +26,7 @@ sess        = tf.Session(config = tf.ConfigProto(gpu_options = gpu_options))
 # Dataset Initialization
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 classes            = ["Normal", "Pathol"]
-dataset_name       = "KayPentax"
+dataset_name       = "Spanish"
 dataset_path       = "/home/hguan/7100-Master-Project/Dataset-" + dataset_name
 num_folds          = 5   
 train_percent      = 90
@@ -59,7 +59,7 @@ encoding_dimension = 32
 encoder_layer      = 5
 decoder_layer      = 5
 epoch_limit        = 100000
-batch_auto         = 1024
+batch_auto         = 4096
 shuffle_choice     = True
 loss_function      = 'mean_squared_error'
 arch_bundle_1      = [encoder_layer, encoding_dimension, decoder_layer]
@@ -131,7 +131,7 @@ for fold_index in range(num_folds):
 
     # =============================================================================
     # Train Part I
-    train_package     = loadMelSpectrogram(train_combo,    classes, dsp_package, num_rows_1, "MFCCs", data, True,  aug_dict)   
+    train_package     = loadMelSpectrogram(train_combo,    classes, dsp_package, num_rows_1, "MFCCs", data, False, unaug_dict)   
     validate_package  = loadMelSpectrogram(validate_combo, classes, dsp_package, num_rows_1, "MFCCs", data, False, unaug_dict)   
     test_package      = loadMelSpectrogram(test_combo,     classes, dsp_package, num_rows_1, "MFCCs", data, False, unaug_dict)
     
@@ -169,8 +169,8 @@ for fold_index in range(num_folds):
     # =============================================================================
     _, history, encodeLayer_index = autoencoder.main(input_vector_length_1, train_data, test_data, arch_bundle_1, train_bundle_auto)
     best_autoencoder              = load_model(best_model_name)
-    print(best_autoencoder.summary())
-    
+
+
     # ===============================================================================
     # save the plot of validation loss
     plt.plot(history.history[monitor])
