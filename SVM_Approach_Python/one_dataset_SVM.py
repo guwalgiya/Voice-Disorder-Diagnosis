@@ -104,7 +104,7 @@ for fold_num in range(num_folds):
 
     # =============================================================================================
     # load all the snippet's spectrogram's (already saved before)
-    train_package     = loadMFCCs(train_combo,    classes, dsp_package, MFCCs_data, True,  aug_dict)   
+    train_package     = loadMFCCs(train_combo,    classes, dsp_package, MFCCs_data, False, unaug_dict)   
     validate_package  = loadMFCCs(validate_combo, classes, dsp_package, MFCCs_data, False, unaug_dict)   
     test_package      = loadMFCCs(test_combo,     classes, dsp_package, MFCCs_data, False, unaug_dict)
     

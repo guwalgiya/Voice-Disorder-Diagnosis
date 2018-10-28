@@ -56,6 +56,7 @@ dsp_package         = [fs, snippet_length, snippet_hop, fft_length, fft_hop]
 input_vector_length = num_rows * ceil(snippet_length / 1000 * fs / fft_hop)
 input_name          = "MelSpectrogram"
 
+
 # =============================================================================
 # Deep Learning Initialization
 fold_num      = 1
@@ -142,8 +143,8 @@ for fold_num in range(num_folds):
 
 
     # ==============================================================================
-    train_package     = loadMelSpectrogram(train_combo,    classes, dsp_package, num_rows, "melSpec", data, False, unaug_dict)
-    validate_package  = loadMelSpectrogram(validate_combo, classes, dsp_package, num_rows, "melSpec", data, False, unaug_dict)   
+    train_package     = loadMelSpectrogram(train_combo,    classes, dsp_package, num_rows, "melSpec", data, True,  aug_dict)
+    validate_package  = loadMelSpectrogram(test_combo,     classes, dsp_package, num_rows, "melSpec", data, False, unaug_dict)   
     test_package      = loadMelSpectrogram(test_combo,     classes, dsp_package, num_rows, "melSpec", data, False, unaug_dict)
     
 

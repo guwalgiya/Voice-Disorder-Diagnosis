@@ -18,8 +18,8 @@ def main(train_data, train_label_2, train_label_3, validate_data, validate_label
 
     # =============================================================================
     CNN = Sequential()
-    CNN.add(Conv2DTranspose(5,  kernel_size = (5, 5), strides = (1, 1), activation = 'relu', input_shape = input_shape))
-    CNN.add(Conv2DTranspose(9,  kernel_size = (3, 3), strides = (1, 1),  activation = 'relu'))
+    CNN.add(Conv2DTranspose(9,  kernel_size = (5, 5), strides = (1, 1), activation = 'relu', input_shape = input_shape))
+    CNN.add(Conv2DTranspose(15,  kernel_size = (3, 3), strides = (1, 1),  activation = 'relu'))
     CNN.add(AveragePooling2D(pool_size = (2, 2)))
     
 
@@ -65,7 +65,7 @@ def main(train_data, train_label_2, train_label_3, validate_data, validate_label
                     batch_size      = batch_size,
                     epochs          = epoch_limit,
                     callbacks       = [early_stopping, model_checkpoint],
-                    #class_weight    = train_class_weight,
+                    class_weight    = train_class_weight,
                     validation_data = (validate_data, validate_label_2),
                     verbose         = 0,
                     shuffle         = True)

@@ -65,7 +65,7 @@ def compressMelSpectrogram(dataset_path, classes, dsp_package, augmented, combo)
         if (a_combo[0] in ["apa", "araa", "arba", "cpca", "cpra", "fgaa", "jaaa", "jgsa", "jmca"]) and (a_combo[1] == "Pathol"):      
             snippet_amount_dict[original_file_name] = [snippet_amount, label_1, label_2, label_3]
         else:
-            snippet_amount_dict[original_file_name]        = [snippet_amount, label_1, label_2, label_3]
+            snippet_amount_dict[original_file_name] = [snippet_amount, label_1, label_2, label_3]
         print(original_file_name, label_1, snippet_amount)
     
 

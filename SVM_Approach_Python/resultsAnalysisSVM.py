@@ -9,7 +9,6 @@ def main(myModel, test_combo, test_data, test_label2, test_augment_amount, class
     count        = 0
     voted_labels = []
     true_labels  = []
-    print(myModel)
     A = myModel.coef_[0]
     #myModel.intercept_ = myModel.intercept_ - 2
     #prediction   = myModel.predict(test_data)
@@ -63,7 +62,7 @@ def main(myModel, test_combo, test_data, test_label2, test_augment_amount, class
        
     #print("Snippets Results")
     con_mat   = confusion_matrix(test_label2, prediction)
-    print(len(test_label2), len(prediction))
+
     #print(con_mat)
     acc = 0;
     for i in range(len(con_mat[0])):

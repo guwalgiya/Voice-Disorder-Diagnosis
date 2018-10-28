@@ -87,11 +87,7 @@ validate_data, validate_label_1, _, _, validate_dist, _                   = vali
 test_data,     test_label_1,     _, _, test_dist,     test_augment_amount = test_package
 print(train_dist)
 
-print(train_label_1.count(0))
-print(train_label_1.count(1))
-print(test_dist)
-print(test_label_1.count(0))
-print(test_label_1.count(1))
+
 # =============================================================================
 train_data_normalized    = np.zeros((train_data.shape))
 validate_data_normalized = np.zeros((validate_data.shape))
