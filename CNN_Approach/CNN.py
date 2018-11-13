@@ -13,17 +13,23 @@ import numpy              as     np
 
 
 # =============================================================================
-def main(train_data, train_label_2, train_label_3, validate_data, validate_label_2, validate_label_3, epoch_limit, batch_size, input_shape, monitor):
+def main(train_data, train_label_2, train_label_3, validate_data, validate_label_2, validate_label_3, epoch_limit, batch_size, input_shape, monitor, best_model_name):
 
 
     # =============================================================================
+    # Initialize
     CNN = Sequential()
+
+
+    # =============================================================================
+    # Convolution and Pooling
     CNN.add(Conv2DTranspose(9,  kernel_size = (5, 5), strides = (1, 1), activation = 'relu', input_shape = input_shape))
-    CNN.add(Conv2DTranspose(15,  kernel_size = (3, 3), strides = (1, 1),  activation = 'relu'))
+    CNN.add(Conv2DTranspose(15, kernel_size = (3, 3), strides = (1, 1), activation = 'relu'))
     CNN.add(AveragePooling2D(pool_size = (2, 2)))
     
 
     # =============================================================================
+    # Fully Connected Layers
     CNN.add(Flatten())
     CNN.add(Dense(1024, activation = 'relu'))
     CNN.add(Dense(512, activation = 'relu'))
@@ -38,29 +44,30 @@ def main(train_data, train_label_2, train_label_3, validate_data, validate_label
 
 
     # =============================================================================
+    # Compile CNN
     CNN.compile(loss      = binary_crossentropy,
                 optimizer = Adam(lr = 0.000001, beta_1 = 0.9, beta_2 = 0.999),
                 metrics   = ['acc'])
 
+
     # =============================================================================
+    # Get train_class_weight
     train_class_weight_raw = class_weight.compute_class_weight('balanced', np.unique(train_label_3), train_label_3)
     train_class_weight     = {}
     for a_class in np.unique(train_label_3):
         train_class_weight[a_class] = train_class_weight_raw[np.unique(train_label_3).tolist().index(a_class)]
     train_class_weight[0] = train_class_weight.pop("Normal")
     train_class_weight[1] = train_class_weight.pop("Pathol")
-    print(train_class_weight)
-    
-    # =============================================================================
-    early_stopping = EarlyStopping(monitor = monitor, patience = 30, verbose = 0,  mode = 'min', min_delta = 0.001)
-
-
-    # =============================================================================
-    saved_path       = "best_model_this_fold.hdf5"
-    model_checkpoint = ModelCheckpoint(saved_path, monitor = monitor, verbose = 0, save_best_only = True, mode = 'min')
 
     
     # =============================================================================
+    # Do Early Stopping and 
+    early_stopping   = EarlyStopping(patience = 30,     monitor = monitor, verbose = 0, mode = 'min', min_delta = 0.001)
+    model_checkpoint = ModelCheckpoint(best_model_name, monitor = monitor, verbose = 0, mode = 'min', save_best_only = True)
+
+  
+    # =============================================================================
+    # Fit
     history = CNN.fit(train_data,     train_label_2,
                     batch_size      = batch_size,
                     epochs          = epoch_limit,

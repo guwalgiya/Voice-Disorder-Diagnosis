@@ -167,7 +167,7 @@ for fold_num in range(num_folds):
 
 
     # ==============================================================================
-    _, history = CNN.main(train_data, train_label_2, train_label_3, validate_data, validate_label_2, validate_label_3, epoch_limit, batch_size, input_shape, monitor)
+    _, history = CNN.main(train_data, train_label_2, train_label_3, validate_data, validate_label_2, validate_label_3, epoch_limit, batch_size, input_shape, monitor, best_model_name)
     best_CNN   = load_model(best_model_name)
     
     
