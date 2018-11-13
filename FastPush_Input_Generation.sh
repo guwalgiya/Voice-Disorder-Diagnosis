@@ -1,1 +1,0 @@
-scp -r Input_Generation hguan@deepnet.music.gatech.edu:~/Voice-Disorder-Diagnosis

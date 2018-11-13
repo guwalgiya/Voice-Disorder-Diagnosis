@@ -1,1 +1,0 @@
-scp -r SVM_Approach_Python hguan@deepnet.music.gatech.edu:~/Voice-Disorder-Diagnosis

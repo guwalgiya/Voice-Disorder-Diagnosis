@@ -1,1 +1,0 @@
-scp -r CNN_Approach hguan@deepnet.music.gatech.edu:~/Voice-Disorder-Diagnosis
