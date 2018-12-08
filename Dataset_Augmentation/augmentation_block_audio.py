@@ -1,11 +1,15 @@
+# =============================================================================
+# Import Packages
 import librosa
 import math
 import numpy as np
 from os import walk
 from os import path
 from os import makedirs
+
+
 # =============================================================================
-fs = 25000
+fs     = 25000
 new_fs = 16000
 cut_length = 500 #must be in mili-seconds
 hopsizeInms = 100 #must be in mili-seconds
