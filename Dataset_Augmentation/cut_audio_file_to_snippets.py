@@ -7,17 +7,21 @@ import math
 
 
 # ===============================================
-# Dataset Inputs
-slash               = "/"
+# Environment
+slash       = "/"
+parent_path = "/home/hguan/7100-Master-Project/Dataset-"
+
+
+# ===============================================
+# Dataset Initialization
 classes             = ["Normal", "Pathol"]
-parent_folder       = "/home/hguan/7100-Master-Project/Dataset-"
 dataset_name        = "Spanish"
-dataset_path        = parent_folder + dataset_name
+dataset_path        = parent_path + dataset_name
 work_on_augmentated = True
 
 
 # ===============================================
-# DSP Inputs, snippet_length, snippet_hop are in mili-seconds
+# Dsp Initialization, snippet_length, snippet_hop are in milliseconds
 fs              = 25000
 new_fs          = 16000
 snippet_hop     = 100 
@@ -26,7 +30,7 @@ snippet_length  = 500
 
 # ===============================================
 # Main Function for this script
-def augmentation_block_audio(dataset_path, a_class, fs, new_fs, snippet_length, snippet_hop):
+def cut_audio_file_to_snippets(dataset_path, a_class, fs, new_fs, snippet_length, snippet_hop):
 
 
     # ===============================================
@@ -35,7 +39,7 @@ def augmentation_block_audio(dataset_path, a_class, fs, new_fs, snippet_length, 
         output_main_folder =  dataset_path + slash + a_class + "_"              + str(snippet_length) + "ms_" + str(snippet_hop) + "ms"
     else:
         input_path         =  dataset_path + slash + a_class
-        output_main_folder =  dataset_path + slash + a_class + "_"              + str(cut_length)     + "ms_" + str(hopSizeInms) + "ms" + "_unaugmented"
+        output_main_folder =  dataset_path + slash + a_class + "_"              + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" + "_unaugmented"
     
 
     # ===============================================
@@ -140,5 +144,5 @@ def block_audio(x, fft_length, fft_hop):
 
 # ===============================================
 # Run this script, this script should be run after augmentation_pitch_shift
-for a_class in classess:
-    augmentation_block_audio(dataset_path, a_class, fs, new_fs, snippet_length, snippet_hop)
+for a_class in classes:
+    cut_audio_file_to_snippets(dataset_path, a_class, fs, new_fs, snippet_length, snippet_hop)

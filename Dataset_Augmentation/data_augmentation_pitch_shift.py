@@ -7,15 +7,22 @@ import math
 
 
 # ===============================================
-# Dataset Inputs
-pitch_shift_tool = "C:\\Master Degree\\7100 - Master Project\\elastiqueProCl.exe";
-num_semitones    = 4
-parent_folder    = "C:\\Master Degree\\7100 - Master Project\\Dataset-"
-dataset_name     = "Spanish"
-dataset_path     = parent_folder + dataset_name
-classes          = ["Normal", "Pathol"]
+# Environment
+pitch_shift_tool = "C:\\Master Degree\\7100 - Master Project\\elastiqueProCl.exe"
+parent_path      = "C:\\Master Degree\\7100 - Master Project\\Dataset-"
 slash            = "\\"
-fs               = 25000
+
+# ===============================================
+# Dataset Initialization
+classes      = ["Normal", "Pathol"]
+dataset_name = "Spanish"
+dataset_path = parent_path + dataset_name
+
+
+# ===============================================
+# DSP Initialization
+fs            = 25000
+num_semitones = 4
 
 
 # ===============================================

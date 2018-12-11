@@ -12,7 +12,14 @@ x: signal
 
 
 Variables Datasets
-dataset_path
+parent_path
 dataset_name: either "KayPentax" or "Spanish"
+dataset_path
 classes: ["Normal", "Pathol"]
 slash: "/"for linux
+work_on_augmentated: Boolean
+
+
+List-type Variable:
+dsp_package
+all_combo
