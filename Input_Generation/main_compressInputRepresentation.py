@@ -2,8 +2,8 @@
 # Import Packages and Functions
 from   compressMelSpectrogram import compressMelSpectrogram
 from   compressDictionary     import compressDictionary
+from   getCombination         import getCombination
 from   compressMFCCs          import compressMFCCs
-import getCombination
 
 
 # ===============================================
@@ -13,7 +13,7 @@ slash       = "/"
 
 
 # ===============================================
-# Dataset Initialization
+# Dataset Initialization, dataset = Spanish or KayPentax
 classes             = ["Normal", "Pathol"]
 dataset_name        = "Spanish"
 dataset_path        = parent_path + dataset_name
@@ -31,7 +31,7 @@ dsp_package    = [snippet_length, snippet_hop, fft_length, fft_hop, mel_length]
 
 
 # ===============================================
-all_combo = getCombination.main(dataset_path, classes, "/")
+all_combo = getCombination(dataset_path, classes, slash)
 
 
 # ===============================================
