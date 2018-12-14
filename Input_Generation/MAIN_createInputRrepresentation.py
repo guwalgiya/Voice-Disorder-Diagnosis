@@ -30,8 +30,8 @@ fs             = 16000
 
 
 # ===============================================
-# Factor for Loudness Histogram, no strict requirement on bin_size choice
-bin_size  = 1000
+# Factor for Aggregated MFCCs
+num_MFCCs = 20
 
 
 # ===============================================
@@ -40,12 +40,16 @@ mel_length = 128
 
 
 # ===============================================
-all_combo = getCombination(dataset_path, classes, slash)
-
+# Factor for Loudness Histogram, no strict requirement on bin_size choice
+bin_size = 1000
 
 
 # ===============================================
-# Run functions
+all_combo = getCombination(dataset_path, classes, slash)
+
+
+# ===============================================
+# Run functions, all saved results are not normalized!
 getMFCCs(dataset_path,             all_combo, fs, snippet_length, snippet_hop, slash, work_on_augmented, fft_length, fft_hop)
 getMelSpectrogram(dataset_path,    all_combo, fs, snippet_length, snippet_hop, slash, work_on_augmented, fft_length, fft_hop, mel_length)
 getLoudnessHistogram(dataset_path, all_combo, fs, snippet_length, snippet_hop, slash, work_on_augmented, bin_size)

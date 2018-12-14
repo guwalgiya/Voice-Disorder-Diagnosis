@@ -15,16 +15,18 @@ def getLoudnessHistogram(dataset_path, all_combo, fs, snippet_length, snippet_ho
 
         
         # ===============================================
-        # Work_on_augmented is reserved for future work
+        # Basic Information
+        cur_name  = a_combo[0]
+        cur_class = a_combo[1]
     
-  
+    
         # ===============================================
         # Load all snippets from that file
-        cur_name     = a_combo[0]
-        cur_class    = a_combo[1]
-        temp_folder  = cur_class    + "_"   + str(snippet_length) + "ms_" + str(snippet_hop) + "ms"
-        snippet_path = dataset_path + slash + temp_folder         + slash + cur_name
-        
+        if work_on_augmented:
+            temp_folder = cur_class + "_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms"
+        else:
+            temp_folder = cur_class + "_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" + "_unaugmented"
+         
 
         # ===============================================
         # Make sure the saving directory is valid
@@ -51,7 +53,6 @@ def getLoudnessHistogram(dataset_path, all_combo, fs, snippet_length, snippet_ho
             bin_edges = np.linspace(0, 1, bin_size + 1, endpoint = True)
             x, _      = librosa.load(a_snippet_path,    sr       = fs)            
             L, _      = np.histogram(abs(x),            bins     = bin_edges)            
-            L         = L / max(L)
             
 
             # =============================================== 
@@ -62,5 +63,5 @@ def getLoudnessHistogram(dataset_path, all_combo, fs, snippet_length, snippet_ho
         
         # ===============================================
         # Report: for one file, all of its snippets' histograms are computed and stored
-        print(a_combo[0], "'s Histogram is done")
+        print(cur_name, "'s Loudness Histograms are computed and saved")
 

@@ -1,30 +1,40 @@
-# =============================================================================
-# Import Packages
-import matplotlib
-matplotlib.use('Agg')
-import getCombination
-from   matplotlib                import pyplot             as plt
+# ===============================================
+# Import Packages and Functions
 from   keras                     import backend            as K
-from   sklearn.model_selection   import KFold
-from   sklearn.feature_selection import SelectKBest, chi2
-from   keras.models              import load_model
-from   loadMelSpectrogram        import loadMelSpectrogram
-from   loadMFCCs                 import loadMFCCs
+from   matplotlib                import pyplot             as plt
+from   autoencoder               import myAutoencoder
+from   datasetSplit              import datasetSplit
 from   keras.models              import Model
+from   keras.models              import load_model
+from   getCombination            import getCombination
+from   loadMelSpectrogram        import loadMelSpectrogram
+from   sklearn.model_selection   import KFold
+from   sklearn.feature_selection import SelectKBest
 import numpy                     as     np
 import tensorflow                as     tf
+import os
 import math
-import dataSplit
-import autoencoder
 import mySVM
 import pickle
-import os
+import dataSplit
+import matplotlib
+matplotlib.use('Agg')
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction = 0.4)
-sess        = tf.Session(config = tf.ConfigProto(gpu_options = gpu_options))
-# =============================================================================
-# Dataset Initialization
+
+# ===============================================
+# Don't let the terminal print garbage
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+
+# ===============================================
+# GPU Setting
+gpu_taken   = 0.4
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction  = gpu_taken)
+sess        = tf.Session(config = tf.ConfigProto(gpu_options = gpu_options))
+
+
+# ===============================================
+# Dataset Initialization
 classes            = ["Normal", "Pathol"]
 dataset_name       = "Spanish"
 dataset_path       = "/home/hguan/7100-Master-Project/Dataset-" + dataset_name
@@ -38,8 +48,8 @@ monitor            = "val_loss"
 # =============================================================================
 # Dsp Initialization
 fs                  = 16000
-snippet_length      = 500   #in milliseconds
-snippet_hop         = 100   #in ms
+snippet_length      = 500   
+snippet_hop         = 100   
 fft_length          = 512
 fft_hop             = 128
 mel_length          = 128
@@ -205,24 +215,7 @@ for fold_index in range(num_folds):
             result_pack   = fold_result_package
             best_dim      = dim
 
-    #possible_encoder.sort(key = lambda possible_encoder: possible_encoder[1], reverse = True)
 
-    #train_data_encoded    = np.concatenate((possible_encoder[0][3], possible_encoder[1][3], possible_encoder[2][3]), axis = 1)
-    #validate_data_encoded = np.concatenate((possible_encoder[0][4], possible_encoder[1][4], possible_encoder[2][4]), axis = 1)
-    #test_data_encoded     = np.concatenate((possible_encoder[0][5], possible_encoder[1][5], possible_encoder[2][5]), axis = 1)
-    # train_data_encoded    = possible_encoder[0][3]
-    # validate_data_encoded = possible_encoder[0][4]
-    # test_data_encoded     = possible_encoder[0][5] 
-    # print('------------------------------')
-    # print(train_data_encoded.shape)
-    # print(validate_data_encoded.shape)
-    # print(test_data_encoded.shape)
-
-
-    # fold_result_package  = mySVM.method1(train_data_encoded,    train_label_3, 
-    #                                          test_data_encoded, test_label_3, 
-    #                                          test_data_encoded,     test_label_3,
-    #                                          test_combo,            test_augment_amount)
     file_acc, file_con_mat, snippet_acc, snippet_con_mat = result_pack
 
     total_file_con_mat = total_file_con_mat + file_con_mat
@@ -236,38 +229,54 @@ for fold_index in range(num_folds):
     
     
     # =============================================================================
+    # Clean almost everything for last fold, otherwise computer might crash
     K.clear_session()
     tf.reset_default_graph()
     os.remove("best_model_this_fold.hdf5")
-    # print("Memory Cleared, Saved Model Removed")
+    print("Memory Cleared, Saved Model Removed")
 
 
-    # =============================================================================
-    cur_possible_result = ((num_normal - total_file_con_mat[0][1]) / num_normal + (num_pathol - total_file_con_mat[1][0]) / num_pathol) / 2
-    print('The best results we can get is:', cur_possible_result)
-
-
-
-# =============================================================================
-print('--------------------------------')
-print('file results')
+# ===============================================
+# Show Final Results after cross-validation
+# Classification Accuracy for each fold (file level)
+print("--------------------------------")
+print("file results")
 print(file_results)
 print(sum(file_results) / len(file_results))
-print('--------------------------------')
+
+
+# ===============================================
+# Show Final Results after cross-validation
+# Classification Accuracy for each fold (snippet level)
+print("--------------------------------")
 print('snippet results')
 print(snippet_results)
 print(sum(snippet_results) / len(snippet_results))
-print('--------------------------------')
+
+
+# ===============================================
+# Macro Accuracy for the whole experiment (file level)
+print("--------------------------------")
 print('final file results')
 print(total_file_con_mat)
-acc = 0;
+
+
+# ===============================================
+file_overall_acc = 0;
 for i in range(len(total_file_con_mat[0])):
-    acc = acc + total_file_con_mat[i][i] / sum(total_file_con_mat[i])
-print(acc / 2)
+    file_overall_acc = file_overall_acc + total_file_con_mat[i][i] / sum(total_file_con_mat[i])
+print(file_overall_acc / len(classes))
+
+
+# ===============================================
+# Macro Accuracy for the whole experiment (snippet level)
 print('--------------------------------')
 print('final snippet results')
 print(total_snip_con_mat)
-acc = 0;
+
+
+# ===============================================
+snip_overall_acc = 0;
 for i in range(len(total_snip_con_mat[0])):
-    acc = acc + total_snip_con_mat[i][i] / sum(total_snip_con_mat[i])
-print(acc / 2)    
+    snip_overall_acc = snip_overall_acc + total_snip_con_mat[i][i] / sum(total_snip_con_mat[i])
+print(snip_overall_acc / len(classes))    

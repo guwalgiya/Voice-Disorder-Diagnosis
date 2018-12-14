@@ -9,7 +9,7 @@ from keras.initializers import RandomNormal
 
 
 # =============================================================================
-def main(input_vector_length, x_train, x_validate, arch_bundle, train_bundle):
+def myAutoencoder(input_vector_length, x_train, x_validate, arch_bundle, train_bundle):
     
 
     # =============================================================================
