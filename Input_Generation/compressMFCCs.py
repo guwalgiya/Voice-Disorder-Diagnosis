@@ -24,11 +24,11 @@ def compressMFCCs(dataset_path, classes, dsp_package, all_combo, slash):
 
 
         # ===============================================
-        original_file_name = a_combo[0]
+        cure_name = a_combo[0]
         
 
         # ===============================================
-        if original_file_name in ["apa_p", "araa_p", "arba_p", "cpca_p", "cpra_p", "fgaa_p", "jaaa_p", "jgsa_p", "jmca_p"]:
+        if cure_name in ["apa_p", "araa_p", "arba_p", "cpca_p", "cpra_p", "fgaa_p", "jaaa_p", "jgsa_p", "jmca_p"]:
             a_combo[0] = a_combo[0][0 : -2]
 
 
@@ -60,10 +60,10 @@ def compressMFCCs(dataset_path, classes, dsp_package, all_combo, slash):
 
             # ===============================================
             # [file_name, pitch shift by semitone, mel_spectrogram] example: ["aaa", "N0.0", MFCCs]
-            if (original_file_name in ["apa_p", "araa_p", "arba_p", "cpca_p", "cpra_p", "fgaa_p", "jaaa_p", "jgsa_p", "jmca_p"]):
-                data.append([original_file_name, MFCCs_name.split('_')[1], MFCCs])
+            if (cure_name in ["apa_p", "araa_p", "arba_p", "cpca_p", "cpra_p", "fgaa_p", "jaaa_p", "jgsa_p", "jmca_p"]):
+                data.append([cure_name, MFCCs_name.split('_')[1], MFCCs])
             else:
-                data.append([original_file_name, MFCCs_name.split('_')[1], MFCCs])
+                data.append([cure_name, MFCCs_name.split('_')[1], MFCCs])
         
         
     # ===============================================
