@@ -5,7 +5,7 @@ from numpy           import argmax
 
 
 # ===============================================
-# Main Function 1, label should be type "2"
+# Main Function, label should be type "2"
 def evaluateSVM(trained_model, test_combo, test_data, test_snippet_labels, test_augment_amount, classes):
     
 
