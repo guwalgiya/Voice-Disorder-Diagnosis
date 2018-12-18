@@ -8,7 +8,7 @@ import numpy                   as     np
 
 
 # ===============================================
-# Main Function, label should be type "2"
+# Main Function, label should be type "3"
 def mySVM(train_data, train_snippet_labels, validate_data, validate_snippet_labels, test_data, test_snippet_labels, test_combo, test_augment_amount, classes, svm_package):
     
 

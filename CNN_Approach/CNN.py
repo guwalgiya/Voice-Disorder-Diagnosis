@@ -1,82 +1,113 @@
-# =============================================================================
-# Import Packages
+# ===============================================
+# Import Packages and Functions
 from   keras.models       import Sequential
-from   keras.initializers import RandomNormal
-from   keras.layers       import Conv2D, MaxPooling2D, Dense, Flatten, Conv2DTranspose, AveragePooling2D, Dropout, normalization
-from   keras              import regularizers
-from   keras.callbacks    import EarlyStopping, ModelCheckpoint
-from   keras.optimizers   import SGD, Adam
+from   keras.layers       import AveragePooling2D, Dense, Flatten, Conv2DTranspose
 from   keras.losses       import binary_crossentropy
-from   myMetrics          import macroAccuracy
 from   sklearn.utils      import class_weight
+from   keras.callbacks    import EarlyStopping, ModelCheckpoint
+from   keras.optimizers   import Adam
 import numpy              as     np
 
 
-# =============================================================================
-def main(train_data, train_label_2, train_label_3, validate_data, validate_label_2, validate_label_3, epoch_limit, batch_size, input_shape, monitor, best_model_name):
+# ===============================================
+# Main Function. Label type 1: Normal = 0, Pathol = 1, Label type 2: Normal = [1, 0], Pathol = [0, 1]
+def myCNN(train_data, train_snippet_labels_1, train_snippet_labels_2, validate_data, validate_snippet_labels_2, classes, CNN_arch_package, CNN_train_package, CNN_callbacks_package):
 
 
-    # =============================================================================
+    # ===============================================
+    # Load parameters for the model's architecture
+    input_shape, FC_num_neuron_list = CNN_arch_package
+
+
+    # ===============================================
+    # Load parameters for model's training
+    learning_rate, epoch_limit, batch_size, metric, shuffle_choice, loss_function, adam_beta_1, adam_beta_2, training_verbose = CNN_train_package
+    
+
+    # ===============================================
+    # Load parameters for training's callbacks (Early Stopping and Model Checkpoints)
+    saved_model_name, callbacks_mode, callbacks_monitor,  callbacks_patience, callbacks_min_delta, callbacks_verbose, callbacks_if_save_best = CNN_callbacks_package
+    
+
+    # ===============================================
     # Initialize
     CNN = Sequential()
 
 
-    # =============================================================================
-    # Convolution and Pooling
-    CNN.add(Conv2DTranspose(9,  kernel_size = (5, 5), strides = (1, 1), activation = 'relu', input_shape = input_shape))
-    CNN.add(Conv2DTranspose(15, kernel_size = (3, 3), strides = (1, 1), activation = 'relu'))
+    # ===============================================
+    # Add Convolution Layers
+    CNN.add(Conv2DTranspose(9,  kernel_size = (5, 5), strides = (1, 1), activation = "relu", input_shape = input_shape))
+    CNN.add(Conv2DTranspose(15, kernel_size = (3, 3), strides = (1, 1), activation = "relu"))
+
+
+    # ===============================================
+    # Add a Pooling Layer
     CNN.add(AveragePooling2D(pool_size = (2, 2)))
     
 
-    # =============================================================================
-    # Fully Connected Layers
+    # ===============================================
+    # Fully Connected Layers (not the last softmax layer)
     CNN.add(Flatten())
-    CNN.add(Dense(1024, activation = 'relu'))
-    CNN.add(Dense(512, activation = 'relu'))
-    CNN.add(Dense(256, activation = 'relu'))
-    CNN.add(Dense(128, activation = 'relu'))
-    CNN.add(Dense(64, activation = 'relu'))
-    CNN.add(Dense(32, activation = 'relu'))
-    CNN.add(Dense(16, activation = 'relu'))
-    CNN.add(Dense(8, activation = 'relu'))
-    CNN.add(Dense(4, activation = 'relu'))
-    CNN.add(Dense(2,    activation = 'softmax'))
+    for num_neuron in FC_num_neuron_list:
+        CNN.add(Dense(num_neuron, activation = "relu"))
+    
+    
+    # ===============================================
+    # Softmax Layer at the end
+    CNN.add(Dense(len(classes), activation = "softmax"))
 
 
-    # =============================================================================
+    # ===============================================
     # Compile CNN
     CNN.compile(loss      = binary_crossentropy,
-                optimizer = Adam(lr = 0.000001, beta_1 = 0.9, beta_2 = 0.999),
-                metrics   = ['acc'])
+                metrics   = [metric],
+                optimizer = Adam(lr = learning_rate, beta_1 = adam_beta_1, beta_2 = adam_beta_2))
 
 
-    # =============================================================================
-    # Get train_class_weight
-    train_class_weight_raw = class_weight.compute_class_weight('balanced', np.unique(train_label_3), train_label_3)
-    train_class_weight     = {}
-    for a_class in np.unique(train_label_3):
-        train_class_weight[a_class] = train_class_weight_raw[np.unique(train_label_3).tolist().index(a_class)]
-    train_class_weight[0] = train_class_weight.pop("Normal")
-    train_class_weight[1] = train_class_weight.pop("Pathol")
+    # ===============================================
+    # Find class weight step 1, because dataset might be unbalanced
+    # This will return an array, example: array([0.75 1.5])
+    train_class_weight_raw = class_weight.compute_class_weight("balanced", np.unique(train_snippet_labels_1), train_snippet_labels_1)
+    
+
+    # ===============================================
+    # Find class weight step 2
+    # This will creat a dictionary, example: {'Normal': 0.75, 'Pathol': 1.5}
+    train_class_weight              = {}
+    for a_label in np.unique(train_snippet_labels_1):
+        train_class_weight[a_label] = train_class_weight_raw[np.unique(train_snippet_labels_1).tolist().index(a_label)]
 
     
-    # =============================================================================
-    # Do Early Stopping and 
-    early_stopping   = EarlyStopping(patience = 30,     monitor = monitor, verbose = 0, mode = 'min', min_delta = 0.001)
-    model_checkpoint = ModelCheckpoint(best_model_name, monitor = monitor, verbose = 0, mode = 'min', save_best_only = True)
+    # ===============================================
+    # Define early stopping
+    early_stopping = EarlyStopping(mode      = callbacks_mode,
+                                   monitor   = callbacks_monitor,
+                                   verbose   = callbacks_verbose,
+                                   patience  = callbacks_patience,
+                                   min_delta = callbacks_min_delta)
+    
+
+    # ===============================================
+    # Define model checkpoint
+    model_checkpoint = ModelCheckpoint(saved_model_name, 
+                                       mode              = callbacks_mode,
+                                       monitor           = callbacks_monitor, 
+                                       verbose           = callbacks_verbose,  
+                                       save_best_only    = callbacks_if_save_best)
 
   
-    # =============================================================================
-    # Fit
-    history = CNN.fit(train_data,     train_label_2,
-                    batch_size      = batch_size,
-                    epochs          = epoch_limit,
-                    callbacks       = [early_stopping, model_checkpoint],
-                    class_weight    = train_class_weight,
-                    validation_data = (validate_data, validate_label_2),
-                    verbose         = 0,
-                    shuffle         = True)
-    
-    
-    # =============================================================================
-    return CNN, history
+    # ===============================================
+    # Training
+    training_history = CNN.fit(train_data,     
+                               train_snippet_labels_2,
+                               epochs                 = epoch_limit,
+                               verbose                = training_verbose,
+                               shuffle                = shuffle_choice,
+                               callbacks              = [early_stopping, model_checkpoint],
+                               batch_size             = batch_size,
+                               class_weight           = train_class_weight,
+                               validation_data        = (validate_data, validate_snippet_labels_2))
+                    
+            
+    # ===============================================
+    return CNN, training_history
