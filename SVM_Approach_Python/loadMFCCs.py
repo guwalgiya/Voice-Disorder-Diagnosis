@@ -5,12 +5,7 @@ import numpy as np
 
 # ===============================================
 # main_functions
-def loadMFCCs(selected_combo, classes, dsp_package, data, work_on_augmented, snippet_dict):
-
-
-    # ===============================================
-    # Load Parameters
-    fs, snippet_length, snippet_hop, fft_length, fft_hop, num_features = dsp_package
+def loadMFCCs(selected_combo, classes, num_features, data, work_on_augmented, snippet_dict):
 
 
     # ===============================================

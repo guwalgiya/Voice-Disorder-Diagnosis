@@ -15,7 +15,7 @@ slash            = "\\"
 # ===============================================
 # Dataset Initialization
 classes      = ["Normal", "Pathol"]
-dataset_name = "Spanish"
+dataset_name = "KayPentax"
 dataset_path = parent_path + dataset_name
 
 

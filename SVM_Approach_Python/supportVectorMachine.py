@@ -9,12 +9,12 @@ import numpy                   as     np
 
 # ===============================================
 # Main Function, label should be type "3"
-def mySVM(train_data, train_snippet_labels, validate_data, validate_snippet_labels, test_data, test_snippet_labels, test_combo, test_augment_amount, classes, svm_package):
+def mySVM(train_data, train_snippet_labels, validate_data, validate_snippet_labels, svm_training_package, classes):
     
 
     # ===============================================
     # Load Parameters
-    c_values, svm_verbose, svm_tolerance, svm_max_iteration = svm_package
+    c_values, svm_verbose, svm_tolerance, svm_max_iteration = svm_training_package
 
      
     # ===============================================
@@ -64,14 +64,9 @@ def mySVM(train_data, train_snippet_labels, validate_data, validate_snippet_labe
         # ===============================================
         # Choose the best svm parameter
         if  best_snippet_acc < cur_snippet_acc:
-            best_snippet_acc = cur_snippet_acc;
+            best_snippet_acc = cur_snippet_acc
             best_svm         = cur_svm;    
     
 
     # ===============================================
-    # Evaluate the best svm after searching c-values, using test data
-    result_package  = evaluateSVM(best_svm, test_combo, test_data, test_snippet_labels, test_augment_amount, classes)
-    
-
-    # ===============================================
-    return result_package
+    return best_svm

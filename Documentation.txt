@@ -23,3 +23,15 @@ work_on_augmentated: Boolean
 List-type Variable:
 dsp_package
 all_combo
+
+train_percent
+num_folds
+
+file_results      
+snippet_results    
+total_file_con_mat  
+total_snip_con_mat  
+
+data_file_name
+aug_dict_file_name
+unaug_dict_file_name
