@@ -7,14 +7,9 @@ import math
 
 # ===============================================
 # Main Functions
-def loadMelSpectrogram(selected_combo, classes, dsp_package, num_rows, representation_type, data, work_on_augmented, snippet_dict):
- 
-
-    # ===============================================
-    # Load Parameters
-    fs, snippet_length, snippet_hop, fft_length, fft_hop, _ = dsp_package
-    
-
+def loadMelSpectrogram(selected_combo, classes, num_rows, num_time_frames, representation_type, data, work_on_augmented, snippet_dict):
+  
+  
     # ===============================================
     # Initialization  
     label_1, label_2, label_3, snippet_num_list, distribution = [], [], [], [], {}
@@ -62,8 +57,7 @@ def loadMelSpectrogram(selected_combo, classes, dsp_package, num_rows, represent
 
     # ===============================================   
     # Prepare to load data
-    num_time_frame = math.ceil(snippet_length / 1000 * fs / fft_hop)
-    loaded_data    = np.zeros((sum(snippet_num_list), num_rows, num_time_frame))
+    loaded_data    = np.zeros((sum(snippet_num_list), num_rows, num_time_frames))
     start_index    = 0
     end_index      = 0    
     for combo in selected_combo:

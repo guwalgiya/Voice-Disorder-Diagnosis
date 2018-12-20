@@ -44,7 +44,7 @@ training_percent = 90
 
 # ===============================================
 # SVM Initialization
-c_values             = [0.1, 1, 10, 100, 1000]
+c_values             = [0.1, 1, 10, 100]
 svm_verbose          = 0
 svm_tolerance        = 0.001
 svm_max_iteration    = 1000
@@ -210,29 +210,29 @@ for fold_index in range(num_folds):
 
     # ===============================================
     # Break the result package
-    cur_file_acc, cur_file_con_mat, cur_snippet_acc, cur_snippet_con_mat = fold_result_package
+    fold_file_acc, fold_file_con_mat, fold_snippet_acc, fold_snippet_con_mat = fold_result_package
     
 
     # ===============================================
     # Print the result for this fold
-    print("The file macro accuracy for this fold is:    ", cur_file_acc)
-    print("The snippet macro accuracy for this fold is: ", cur_snippet_acc)
+    print("The file macro accuracy for this fold is:    ", fold_file_acc)
+    print("The snippet macro accuracy for this fold is: ", fold_snippet_acc)
     print("File confusion matrix for this fold is:")
-    print(cur_file_con_mat)
+    print(fold_file_con_mat)
     print("Snippet confusion matrix for this fold is:")
-    print(cur_snippet_con_mat)
+    print(fold_snippet_con_mat)
 
 
     # ===============================================
     # Update overall results
-    file_results.append(cur_file_acc)
-    snippet_results.append(cur_snippet_acc)
+    file_results.append(fold_file_acc)
+    snippet_results.append(fold_snippet_acc)
 
 
     # ===============================================
     # Update overall confusion matrix
-    total_file_con_mat    = total_file_con_mat    + cur_file_con_mat
-    total_snippet_con_mat = total_snippet_con_mat + cur_snippet_con_mat
+    total_file_con_mat    = total_file_con_mat    + fold_file_con_mat
+    total_snippet_con_mat = total_snippet_con_mat + fold_snippet_con_mat
 
 
 # ===============================================

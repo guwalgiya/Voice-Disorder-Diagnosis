@@ -5,7 +5,7 @@ import random
 
 # ===============================================
 # Main Function
-def datasetSplit(name_class_combo, train_percent, validate_percent, test_percent):
+def splitData(name_class_combo, train_percent, validate_percent, test_percent):
 
 
     # ===============================================

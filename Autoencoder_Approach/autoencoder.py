@@ -8,14 +8,14 @@ from keras.optimizers   import Adam
 
 # ===============================================
 # Main Function
-def myAutoencoder(train_data, validation_data, AE_arch_package, AE_train_package, AE_callbacks_package):
+def myAutoencoder(train_data, validation_data, AE_architecture_package, AE_training_package, AE_callbacks_package):
     
     
     # ===============================================
     # Load Parameters
-    input_vector_length, encoding_dimension, num_encoding_layer, num_decoding_layer                                                                            = AE_arch_package
-    saved_model_name,    callbacks_mode,     callbacks_monitor,  callbacks_patience, callbacks_min_delta, callbacks_verbose, callbacks_if_save_best            = AE_callbacks_package
-    AE_learning_rate,    epoch_limit,        batch_size,         shuffle_choice,     loss_function,       adam_beta_1,       adam_beta_2,           AE_verbose = AE_train_package
+    input_vector_length, encoding_dimension, num_encoding_layer, num_decoding_layer                                                                             = AE_architecture_package
+    saved_model_name,    callbacks_mode,     callbacks_monitor,  callbacks_patience, callbacks_min_delta, callbacks_verbose, if_only_save_best                  = AE_callbacks_package
+    learning_rate,       epoch_limit,        batch_size,         shuffle_choice,     loss_function,       adam_beta_1,       adam_beta_2,      training_verbose = AE_training_package
 
     
     # ===============================================
@@ -70,12 +70,12 @@ def myAutoencoder(train_data, validation_data, AE_arch_package, AE_train_package
                                        mode              = callbacks_mode,
                                        monitor           = callbacks_monitor, 
                                        verbose           = callbacks_verbose, 
-                                       save_best_only    = callbacks_if_save_best)
+                                       save_best_only    = if_only_save_best)
 
     
     # ===============================================
     autoencoder.compile(loss      = loss_function,
-                        optimizer = Adam(lr = AE_learning_rate, beta_1 = adam_beta_1, beta_2 = adam_beta_2))
+                        optimizer = Adam(lr = learning_rate, beta_1 = adam_beta_1, beta_2 = adam_beta_2))
 
 
 
@@ -84,7 +84,7 @@ def myAutoencoder(train_data, validation_data, AE_arch_package, AE_train_package
     training_history = autoencoder.fit(train_data,       
                                        train_data,
                                        epochs          = epoch_limit,
-                                       verbose         = AE_verbose,
+                                       verbose         = training_verbose,
                                        shuffle         = shuffle_choice,
                                        callbacks       = [early_stopping, model_checkpoint],
                                        batch_size      = batch_size,
@@ -104,4 +104,4 @@ def myAutoencoder(train_data, validation_data, AE_arch_package, AE_train_package
 
     
     # ===============================================
-    return encoder, training_history, encoding_layer_index
+    return training_history, encoding_layer_index
