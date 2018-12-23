@@ -11,17 +11,17 @@ import numpy              as     np
 
 # ===============================================
 # Main Function. Label type 1: Normal = 0, Pathol = 1, Label type 2: Normal = [1, 0], Pathol = [0, 1]
-def myCNN(train_data, train_snippet_labels_1, train_snippet_labels_2, validate_data, validate_snippet_labels_2, classes, CNN_arch_package, CNN_train_package, CNN_callbacks_package):
+def myCNN(train_data, train_snippet_labels_1, train_snippet_labels_2, validate_data, validate_snippet_labels_2, classes, CNN_architecture_package, CNN_training_package, CNN_callbacks_package):
 
 
     # ===============================================
     # Load parameters for the model's architecture
-    input_shape, FC_num_neuron_list = CNN_arch_package
+    input_shape, FC_num_neuron_list = CNN_architecture_package
 
 
     # ===============================================
     # Load parameters for model's training
-    learning_rate, epoch_limit, batch_size, metric, shuffle_choice, loss_function, adam_beta_1, adam_beta_2, training_verbose = CNN_train_package
+    learning_rate, epoch_limit, batch_size, metric, shuffle_choice, loss_function, adam_beta_1, adam_beta_2, training_verbose = CNN_training_package
     
 
     # ===============================================
@@ -110,4 +110,4 @@ def myCNN(train_data, train_snippet_labels_1, train_snippet_labels_2, validate_d
                     
             
     # ===============================================
-    return CNN, training_history
+    return training_history

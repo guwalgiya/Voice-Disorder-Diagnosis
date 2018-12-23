@@ -5,7 +5,7 @@ from numpy           import argmax
 
 
 # ===============================================
-# Main Function 2, label should be type "1"
+# Main Function 2, label should be type "3"
 def evaluateCNN(trained_model, test_combo, test_data, test_snippet_labels, test_augment_amount, classes):
      
             
@@ -54,7 +54,7 @@ def evaluateCNN(trained_model, test_combo, test_data, test_snippet_labels, test_
             
             # ===============================================
             for j in range(len(classes)):
-                weight =  predicted_snippet_labels[snippet_index : snippet_index + cur_snippet_amount].tolist().count(classes[j])
+                weight =  predicted_snippet_labels[snippet_index : snippet_index + cur_snippet_amount].count(classes[j])
                 classes_weight.append(weight)
             
 
@@ -103,4 +103,4 @@ def evaluateCNN(trained_model, test_combo, test_data, test_snippet_labels, test_
     
     # ===============================================
     # Return a list    
-    return [file_acc, snippet_acc, file_con_mat, snippet_con_mat]
+    return [file_acc, file_con_mat, snippet_acc, snippet_con_mat]

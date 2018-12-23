@@ -9,12 +9,12 @@ import numpy                   as     np
 
 # ===============================================
 # Main Function, label should be type "3"
-def mySVM(train_data, train_snippet_labels, validate_data, validate_snippet_labels, test_data, test_snippet_labels, test_combo, test_augment_amount, classes, svm_package):
+def mySVM(train_data, train_snippet_labels, validate_data, validate_snippet_labels, svm_training_package, classes):
     
 
     # ===============================================
     # Load Parameters
-    c_values, svm_verbose, svm_tolerance, svm_max_iteration = svm_package
+    c_values, svm_verbose, svm_tolerance, svm_max_iteration = svm_training_package
 
      
     # ===============================================
@@ -39,11 +39,7 @@ def mySVM(train_data, train_snippet_labels, validate_data, validate_snippet_labe
 
         # ===============================================
         # create a linear svm
-        cur_svm = svm.LinearSVC(C            = c, 
-                                tol          = svm_tolerance,
-                                verbose      = svm_verbose,   
-                                max_iter     = svm_max_iteration,
-                                class_weight = train_class_weight) 
+        cur_svm = svm.LinearSVC(C = c, verbose = svm_verbose, tol = svm_tolerance, max_iter = svm_max_iteration, class_weight = train_class_weight) 
 
 
         # ===============================================
@@ -68,14 +64,9 @@ def mySVM(train_data, train_snippet_labels, validate_data, validate_snippet_labe
         # ===============================================
         # Choose the best svm parameter
         if  best_snippet_acc < cur_snippet_acc:
-            best_snippet_acc = cur_snippet_acc;
+            best_snippet_acc = cur_snippet_acc
             best_svm         = cur_svm;    
     
 
     # ===============================================
-    # Evaluate the best svm after searching c-values, using test data
-    result_package  = evaluateSVM(best_svm, test_combo, test_data, test_snippet_labels, test_augment_amount, classes)
-    
-
-    # ===============================================
-    return result_package
+    return best_svm
