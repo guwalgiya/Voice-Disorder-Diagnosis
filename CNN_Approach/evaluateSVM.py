@@ -5,21 +5,21 @@ from numpy           import argmax
 
 
 # ===============================================
-# Main Function 1, label should be type "2"
+# Main Function 1, label should be type "3"
 def evaluateSVM(trained_model, test_combo, test_data, test_snippet_labels, test_augment_amount, classes):
     
 
     # ===============================================
     # Initialization
     snippet_index         = 0
-    true_file_labels      = []
+    test_file_labels      = []
     predicted_file_labels = []
 
 
     # ===============================================
     # Get predicted results for every snippet
     predicted_snippet_labels = trained_model.predict(test_data)
-    
+
 
     # ===============================================
     # Now anlayze each file (not snippet)
@@ -61,15 +61,15 @@ def evaluateSVM(trained_model, test_combo, test_data, test_snippet_labels, test_
 
             # ===============================================
             predicted_file_labels.append(classes[max_weight_index])
-            true_file_labels.append(cur_file_label)
+            test_file_labels.append(cur_file_label)
 
 
 
 
     # ===============================================
     # Find confusion matrix on filelevel and snippet level
-    file_con_mat    = confusion_matrix(true_file_labels, predicted_file_labels)
-    snippet_con_mat = confusion_matrix(test_snippet_labels, predicted_file_labels)
+    file_con_mat    = confusion_matrix(test_file_labels,    predicted_file_labels)
+    snippet_con_mat = confusion_matrix(test_snippet_labels, predicted_snippet_labels)
     
 
     # ==============================================================================

@@ -40,6 +40,7 @@ sess        = tf.Session(config = tf.ConfigProto(gpu_options = gpu_options))
 parent_path = "/home/hguan/7100-Master-Project/Dataset-"
 slash       = "/"
 
+
 # ===============================================
 # Dsp Initialization, num_rows = num_MFCCs (not aggregated)
 fs              = 16000
@@ -55,6 +56,7 @@ num_time_frames = math.ceil(snippet_length / 1000 * fs / fft_hop)
 # ===============================================
 # Dataset Initialization, dataset = Spanish or KayPentax
 classes              = ["Normal", "Pathol"]
+input_type           = "MFCCs"
 dataset_name         = "KayPentax"
 dataset_path         = parent_path       + dataset_name
 data_file_name       = "MelSpectrogram_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" + "_block" + str(fft_length) + "_hop" + str(fft_hop) + "_mel" + str(mel_length)
@@ -122,9 +124,9 @@ total_snippet_con_mat = np.array([[0,0],[0,0]])
 
 # ===============================================
 # Loading Pickle
-temp_file_1  = open(dataset_path + slash + data_file_name       + '.pickle', 'rb')  
-temp_file_2  = open(dataset_path + slash + aug_dict_file_name   + '.pickle', 'rb')
-temp_file_3  = open(dataset_path + slash + unaug_dict_file_name + '.pickle', 'rb')
+temp_file_1  = open(dataset_path + slash + data_file_name       + ".pickle", "rb")  
+temp_file_2  = open(dataset_path + slash + aug_dict_file_name   + ".pickle", "rb")
+temp_file_3  = open(dataset_path + slash + unaug_dict_file_name + ".pickle", "rb")
 
 
 # ===============================================
@@ -206,9 +208,9 @@ for fold_index in range(num_folds):
     # Load all the snippet's melSpectrograms
     # Training set can use either augmented data or unaugmented data
     # Validation set and test set must use unaugmented data
-    training_package = loadMelSpectrogram(training_combo, classes, num_rows, num_time_frames, "MFCCs", melSpectrogram_data, False,  unaug_dict)   
-    validate_package = loadMelSpectrogram(validate_combo, classes, num_rows, num_time_frames, "MFCCs", melSpectrogram_data, False, unaug_dict)   
-    test_package     = loadMelSpectrogram(test_combo,     classes, num_rows, num_time_frames, "MFCCs", melSpectrogram_data, False, unaug_dict)
+    training_package = loadMelSpectrogram(training_combo, classes, num_rows, num_time_frames, input_type, melSpectrogram_data, False,  unaug_dict)   
+    validate_package = loadMelSpectrogram(validate_combo, classes, num_rows, num_time_frames, input_type, melSpectrogram_data, False, unaug_dict)   
+    test_package     = loadMelSpectrogram(test_combo,     classes, num_rows, num_time_frames, input_type, melSpectrogram_data, False, unaug_dict)
     
 
     # ===============================================
@@ -314,8 +316,8 @@ for fold_index in range(num_folds):
         # ===============================================
         # Check how good is this encoding dimension perform on the validation set
         cur_result_package = evaluateSVM(cur_SVM,                 validate_combo, 
-    	                                    validate_data_encoded,   validate_label_3, 
-    	                                    validate_augment_amount, classes)
+    	                                 validate_data_encoded,   validate_label_3, 
+    	                                 validate_augment_amount, classes)
  
         
         # ===============================================
@@ -325,11 +327,11 @@ for fold_index in range(num_folds):
         # ===============================================
         # if current result is good enough on the validation set
         # Then we keep current encoder + SVM as our best model combination
-        if cur_file_acc              > fold_best_file_acc:
-            fold_best_SVM            = cur_SVM
-            fold_best_encoder        = cur_encoder
-            fold_best_file_acc       = cur_file_acc
-            fold_best_dimension      = dimension
+        if cur_file_acc         > fold_best_file_acc:
+            fold_best_SVM       = cur_SVM
+            fold_best_encoder   = cur_encoder
+            fold_best_file_acc  = cur_file_acc
+            fold_best_dimension = dimension
 
 
     # ===============================================
@@ -340,14 +342,14 @@ for fold_index in range(num_folds):
     
     # ===============================================
     # Prepare test set
-    test_data_encoded   = fold_best_encoder.predict(test_data_normalized) 
+    test_data_encoded = fold_best_encoder.predict(test_data_normalized) 
     
     
     # ===============================================
     # Test our best model combination
     fold_result_package = evaluateSVM(fold_best_SVM,       test_combo, 
-	                                    test_data_encoded,   test_label_3, 
-	                                    test_augment_amount, classes)
+	                                  test_data_encoded,   test_label_3, 
+	                                  test_augment_amount, classes)
     
     
     # ===============================================

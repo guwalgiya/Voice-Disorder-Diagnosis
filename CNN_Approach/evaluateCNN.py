@@ -12,7 +12,7 @@ def evaluateCNN(trained_model, test_combo, test_data, test_snippet_labels, test_
     # ===============================================
     # Initialization
     snippet_index            = 0
-    true_file_labels         = []
+    test_file_labels         = []
     predicted_file_labels    = []
     predicted_snippet_labels = []
 
@@ -68,13 +68,13 @@ def evaluateCNN(trained_model, test_combo, test_data, test_snippet_labels, test_
 
             # ===============================================
             predicted_file_labels.append(classes[max_weight_index])
-            true_file_labels.append(cur_file_label)
+            test_file_labels.append(cur_file_label)
 
            
     # ===============================================
     # Find confusion matrix on filelevel and snippet level
-    file_con_mat    = confusion_matrix(true_file_labels, predicted_file_labels)
-    snippet_con_mat = confusion_matrix(test_snippet_labels, predicted_file_labels)
+    file_con_mat    = confusion_matrix(test_file_labels,    predicted_file_labels)
+    snippet_con_mat = confusion_matrix(test_snippet_labels, predicted_snippet_labels)
     
 
     # ===============================================

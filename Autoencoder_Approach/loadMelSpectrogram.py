@@ -7,7 +7,7 @@ import math
 
 # ===============================================
 # Main Functions
-def loadMelSpectrogram(selected_combo, classes, num_rows, num_time_frames, representation_type, data, work_on_augmented, snippet_dict):
+def loadMelSpectrogram(selected_combo, classes, num_rows, num_time_frames, input_type, data, work_on_augmented, snippet_dict):
   
   
     # ===============================================
@@ -81,7 +81,7 @@ def loadMelSpectrogram(selected_combo, classes, num_rows, num_time_frames, repre
 
         # ===============================================  
         # Load pre-saved melspectrogram, and compute a "MFCCs-gram" with 20 MFCCs
-        if representation_type == "MFCCs":
+        if input_type == "MFCCs":
             for i in np.arange(start_index, end_index):
                 S              = melSpectrograms[i - start_index]
                 loaded_data[i] = librosa.feature.mfcc(S = librosa.power_to_db(S), n_mfcc = 20)
