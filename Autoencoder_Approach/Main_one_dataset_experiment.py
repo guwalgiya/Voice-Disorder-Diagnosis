@@ -205,7 +205,7 @@ for fold_index in range(num_folds):
 
 
     # ===============================================
-    # Load all the snippet's melSpectrograms
+    # Load all the snippet"s melSpectrograms
     # Training set can use either augmented data or unaugmented data
     # Validation set and test set must use unaugmented data
     training_package = loadMelSpectrogram(training_combo, classes, num_rows, num_time_frames, input_type, melSpectrogram_data, False,  unaug_dict)   
@@ -259,9 +259,9 @@ for fold_index in range(num_folds):
 
     # ===============================================
     # Reshape
-    training_data_normalized = training_data_normalized.reshape((len(training_data_normalized), np.prod(training_data_normalized.shape[1:])), order = 'F') 
-    validate_data_normalized = validate_data_normalized.reshape((len(validate_data_normalized), np.prod(validate_data_normalized.shape[1:])), order = 'F')
-    test_data_normalized     = test_data_normalized.reshape((len(test_data_normalized),         np.prod(test_data_normalized.shape[1:])),     order = 'F')
+    training_data_normalized = training_data_normalized.reshape((len(training_data_normalized), np.prod(training_data_normalized.shape[1:])), order = "F") 
+    validate_data_normalized = validate_data_normalized.reshape((len(validate_data_normalized), np.prod(validate_data_normalized.shape[1:])), order = "F")
+    test_data_normalized     = test_data_normalized.reshape((len(test_data_normalized),         np.prod(test_data_normalized.shape[1:])),     order = "F")
  
 
     # ===============================================
@@ -400,7 +400,7 @@ print(sum(file_results) / len(file_results))
 # Show Final Results after cross-validation
 # Classification Accuracy for each fold (snippet level)
 print("--------------------------------")
-print('snippet results')
+print("snippet results")
 print(snippet_results)
 print(sum(snippet_results) / len(snippet_results))
 
@@ -408,7 +408,7 @@ print(sum(snippet_results) / len(snippet_results))
 # ===============================================
 # Macro Accuracy for the whole experiment (file level)
 print("--------------------------------")
-print('final file results')
+print("final file results")
 print(total_file_con_mat)
 
 
@@ -421,8 +421,8 @@ print(file_overall_acc / len(classes))
 
 # ===============================================
 # Macro Accuracy for the whole experiment (snippet level)
-print('--------------------------------')
-print('final snippet results')
+print("--------------------------------")
+print("final snippet results")
 print(total_snippet_con_mat)
 
 

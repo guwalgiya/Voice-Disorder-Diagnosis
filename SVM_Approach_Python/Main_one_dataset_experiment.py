@@ -61,9 +61,9 @@ total_snippet_con_mat = np.array([[0,0],[0,0]])
 
 # ===============================================
 # Loading Pickle
-temp_file_1  = open(dataset_path + slash + data_file_name       + '.pickle', 'rb')  
-temp_file_2  = open(dataset_path + slash + aug_dict_file_name   + '.pickle', 'rb')
-temp_file_3  = open(dataset_path + slash + unaug_dict_file_name + '.pickle', 'rb')
+temp_file_1  = open(dataset_path + slash + data_file_name       + ".pickle", "rb")  
+temp_file_2  = open(dataset_path + slash + aug_dict_file_name   + ".pickle", "rb")
+temp_file_3  = open(dataset_path + slash + unaug_dict_file_name + ".pickle", "rb")
 
 
 # ===============================================
@@ -142,7 +142,7 @@ for fold_index in range(num_folds):
     
 
     # ===============================================
-    # Load all the snippet's aggregated MFCCs
+    # Load all the snippet"s aggregated MFCCs
     # Training set can use either augmented data or unaugmented data
     # Validation set and test set must use unaugmented data
     training_package  = loadMFCCs(training_combo, classes, num_features, MFCCs_data, True,  aug_dict)   
@@ -248,7 +248,7 @@ print(sum(file_results) / len(file_results))
 # Show Final Results after cross-validation
 # Classification Accuracy for each fold (snippet level)
 print("--------------------------------")
-print('snippet results')
+print("snippet results")
 print(snippet_results)
 print(sum(snippet_results) / len(snippet_results))
 
@@ -256,7 +256,7 @@ print(sum(snippet_results) / len(snippet_results))
 # ===============================================
 # Macro Accuracy for the whole experiment (file level)
 print("--------------------------------")
-print('final file results')
+print("final file results")
 print(total_file_con_mat)
 
 
@@ -269,8 +269,8 @@ print(file_overall_acc / len(classes))
 
 # ===============================================
 # Macro Accuracy for the whole experiment (snippet level)
-print('--------------------------------')
-print('final snippet results')
+print("--------------------------------")
+print("final snippet results")
 print(total_snippet_con_mat)
 
 

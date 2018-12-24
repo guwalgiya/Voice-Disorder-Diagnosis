@@ -133,9 +133,9 @@ total_snippet_con_mat_SVM = np.array([[0,0],[0,0]])
 
 # ===============================================
 # Loading Pickle
-temp_file_1  = open(dataset_path + slash + data_file_name       + '.pickle', 'rb')  
-temp_file_2  = open(dataset_path + slash + aug_dict_file_name   + '.pickle', 'rb')
-temp_file_3  = open(dataset_path + slash + unaug_dict_file_name + '.pickle', 'rb')
+temp_file_1  = open(dataset_path + slash + data_file_name       + ".pickle", "rb")  
+temp_file_2  = open(dataset_path + slash + aug_dict_file_name   + ".pickle", "rb")
+temp_file_3  = open(dataset_path + slash + unaug_dict_file_name + ".pickle", "rb")
 
 
 # ===============================================
@@ -227,7 +227,7 @@ for fold_index in range(num_folds):
 
 
     # ===============================================
-    # Load all the snippet's melSpectrograms
+    # Load all the snippet"s melSpectrograms
     # Training set can use either augmented data or unaugmented data
     # Validation set and test set must use unaugmented data
     training_package = loadMelSpectrogram(training_combo, classes, mel_length, num_time_frames, input_type, melSpectrogram_data, False, unaug_dict)   
@@ -258,7 +258,7 @@ for fold_index in range(num_folds):
     
     
     # ===============================================
-    # Rearange tensor's dimension
+    # Rearange tensor"s dimension
     training_data = np.moveaxis(training_data, 1, -1)
     validate_data = np.moveaxis(validate_data, 1, -1)
     test_data     = np.moveaxis(test_data,     1, -1)
@@ -435,7 +435,7 @@ print(sum(file_results_CNN) / len(file_results_CNN))
 # Show Final Results after cross-validation
 # Classification Accuracy for each fold (snippet level)
 print("--------------------------------")
-print('snippet results')
+print("snippet results")
 print(snippet_results_CNN)
 print(sum(snippet_results_CNN) / len(snippet_results_CNN))
 
@@ -443,7 +443,7 @@ print(sum(snippet_results_CNN) / len(snippet_results_CNN))
 # ===============================================
 # Macro Accuracy for the whole experiment (file level)
 print("--------------------------------")
-print('final file results')
+print("final file results")
 print(total_file_con_mat_CNN)
 
 
@@ -456,8 +456,8 @@ print(file_overall_acc / len(classes))
 
 # ===============================================
 # Macro Accuracy for the whole experiment (snippet level)
-print('--------------------------------')
-print('final snippet results')
+print("--------------------------------")
+print("final snippet results")
 print(total_snippet_con_mat_CNN)
 
 
@@ -471,7 +471,7 @@ print(snippet_overall_acc / len(classes))
 # ===============================================
 # Show Final Results after cross-validation
 # Classification Accuracy for each fold (file level)
-print("Now showing the result if we search CNN's layers: ")
+print("Now showing the result if we search CNN"s layers: ")
 print("--------------------------------")
 print("file results")
 print(file_results_SVM)
@@ -482,7 +482,7 @@ print(sum(file_results_SVM) / len(file_results_SVM))
 # Show Final Results after cross-validation
 # Classification Accuracy for each fold (snippet level)
 print("--------------------------------")
-print('snippet results')
+print("snippet results")
 print(snippet_results_SVM)
 print(sum(snippet_results_SVM) / len(snippet_results_SVM))
 
@@ -490,7 +490,7 @@ print(sum(snippet_results_SVM) / len(snippet_results_SVM))
 # ===============================================
 # Macro Accuracy for the whole experiment (file level)
 print("--------------------------------")
-print('final file results')
+print("final file results")
 print(total_file_con_mat_SVM)
 
 
@@ -503,8 +503,8 @@ print(file_overall_acc / len(classes))
 
 # ===============================================
 # Macro Accuracy for the whole experiment (snippet level)
-print('--------------------------------')
-print('final snippet results')
+print("--------------------------------")
+print("final snippet results")
 print(total_snippet_con_mat_SVM)
 
 
