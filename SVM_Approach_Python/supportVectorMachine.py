@@ -39,7 +39,11 @@ def mySVM(train_data, train_snippet_labels, validate_data, validate_snippet_labe
 
         # ===============================================
         # create a linear svm
-        cur_svm = svm.LinearSVC(C = c, verbose = svm_verbose, tol = svm_tolerance, max_iter = svm_max_iteration, class_weight = train_class_weight) 
+        cur_svm = svm.LinearSVC(C            = c, 
+        	                    tol          = svm_tolerance,
+        	                    verbose      = svm_verbose, 
+        	                    max_iter     = svm_max_iteration, 
+        	                    class_weight = train_class_weight) 
 
 
         # ===============================================

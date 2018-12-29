@@ -61,7 +61,9 @@ def myCNN(train_data, train_snippet_labels_1, train_snippet_labels_2, validate_d
     # Compile CNN
     CNN.compile(loss      = binary_crossentropy,
                 metrics   = [metric],
-                optimizer = Adam(lr = learning_rate, beta_1 = adam_beta_1, beta_2 = adam_beta_2))
+                optimizer = Adam(lr     = learning_rate, 
+                	             beta_1 = adam_beta_1, 
+                	             beta_2 = adam_beta_2))
 
 
     # ===============================================
