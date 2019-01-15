@@ -8,14 +8,14 @@ from   compressMFCCs          import compressMFCCs
 
 # ===============================================
 # Environment
-parent_path = "/home/hguan/7100-Master-Project/Dataset-"
+parent_path = "/home/hguan/Voice-Disorder-Diagnosis/Dataset-"
 slash       = "/"
 
 
 # ===============================================
 # Dataset Initialization, dataset = Spanish or KayPentax
 classes             = ["Normal", "Pathol"]
-dataset_name        = "Spanish"
+dataset_name        = "KayPentax"
 dataset_path        = parent_path + dataset_name
 work_on_augmentated = False
 

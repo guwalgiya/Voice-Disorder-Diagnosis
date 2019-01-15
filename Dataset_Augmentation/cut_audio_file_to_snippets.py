@@ -9,13 +9,13 @@ import math
 # ===============================================
 # Environment
 slash       = "/"
-parent_path = "/home/hguan/7100-Master-Project/Dataset-"
+parent_path = "/home/hguan/Voice-Disorder-Diagnosis/Dataset-"
 
 
 # ===============================================
 # Dataset Initialization
 classes             = ["Normal", "Pathol"]
-dataset_name        = "Spanish"
+dataset_name        = "KayPentax"
 dataset_path        = parent_path + dataset_name
 work_on_augmentated = True
 
@@ -70,7 +70,6 @@ def cut_audio_file_to_snippets(dataset_path, a_class, fs, new_fs, snippet_length
         blocking(x, fft_length, fft_hop, new_fs, output_main_folder, name[0 : len(name) - 4] + "_" + str(snippet_length)  + "ms"
                                                                                              + "_" + str(snippet_hop)     + "ms")        
         
-
         # ===============================================
         print(name, "is cut into snippets")
     

@@ -1,6 +1,6 @@
 # ===============================================
 # Import Packages and Functions
-from   os      import walk
+from   os     import walk
 import pickle
 
 
@@ -24,18 +24,18 @@ def compressDictionary(dataset_path, classes, dsp_package, all_combo, slash, wor
 
         # ===============================================
         # label_1: 1, label_2:[0,1], label_3: pathol
-        original_file_name    = a_combo[0]
-        class_index           = classes.index(a_combo[1])
+        original_file_name   = a_combo[0]
+        class_index          = classes.index(a_combo[1])
         
         # ===============================================
-        label_1               = class_index
+        label_1              = class_index
         
         # ===============================================
-        label_2               = [0] * len(classes)
-        label_2[class_index]  = 1                
+        label_2              = [0] * len(classes)
+        label_2[class_index] = 1                
         
         # ===============================================
-        label_3               = a_combo[1]
+        label_3              = a_combo[1]
         
         
         # ===============================================  
@@ -52,7 +52,7 @@ def compressDictionary(dataset_path, classes, dsp_package, all_combo, slash, wor
         
         # ===============================================
         spectrogram_folder = a_combo[0]   + "_MelSpectrogram_block" + str(fft_length) + "_hop" + str(fft_hop)       + "_mel" + str(mel_length)
-        spectrogram_path   = dataset_path + "/"                     + sub_folder      + "/"    + spectrogram_folder
+        spectrogram_path   = dataset_path + slash                    + sub_folder      + "/"    + spectrogram_folder
 
 
         # ===============================================
@@ -91,7 +91,7 @@ def compressDictionary(dataset_path, classes, dsp_package, all_combo, slash, wor
 
     # ===============================================
     # Same the dictionary as a pickle file
-    with open(dataset_path + "/" + dict_file_name + ".pickle", "wb") as temp_file:
+    with open(dataset_path + slash + dict_file_name + ".pickle", "wb") as temp_file:
         pickle.dump(snippet_amount_dict, temp_file, protocol = pickle.HIGHEST_PROTOCOL)
 
     

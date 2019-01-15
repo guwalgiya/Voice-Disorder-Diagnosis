@@ -76,8 +76,8 @@ def myAutoencoder(train_data, validation_data, AE_architecture_package, AE_train
     # ===============================================
     autoencoder.compile(loss      = loss_function,
                         optimizer = Adam(lr     = learning_rate, 
-                        	             beta_1 = adam_beta_1, 
-                        	             beta_2 = adam_beta_2))
+                                         beta_1 = adam_beta_1, 
+                                         beta_2 = adam_beta_2))
 
 
 

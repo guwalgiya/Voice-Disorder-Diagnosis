@@ -36,6 +36,9 @@ def evaluateSVM(trained_model, test_combo, test_data, test_snippet_labels, test_
         # It might be possible that a file is too short, then it does not have any corresponding snippets
         if cur_snippet_amount == 0:
             pass
+        
+        
+        # ===============================================
         else:
             
             
@@ -74,8 +77,8 @@ def evaluateSVM(trained_model, test_combo, test_data, test_snippet_labels, test_
 
     # ==============================================================================
     # Compute accuracy on file level and snippet level
-    file_acc     = 0
-    snippet_acc  = 0;
+    file_acc    = 0
+    snippet_acc = 0;
     
 
     # ===============================================

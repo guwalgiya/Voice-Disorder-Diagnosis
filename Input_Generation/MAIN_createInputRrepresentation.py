@@ -8,16 +8,16 @@ from getLoudnessHistogram import getLoudnessHistogram
 
 # ===============================================
 # Environment
-parent_path = "/home/hguan/7100-Master-Project/Dataset-"
+parent_path = "/home/hguan/Voice-Disorder-Diagnosis/Dataset-"
 slash       = "/"
 
 
 # ===============================================
 # Dataset Initialization, dataset = Spanish or KayPentax
-classes             = ["Normal", "Pathol"]
-dataset_name        = "Spanish"
-dataset_path        = parent_path + dataset_name
-work_on_augmentated = False
+classes           = ["Normal", "Pathol"]
+dataset_name      = "KayPentax"
+dataset_path      = parent_path + dataset_name
+work_on_augmented = True
 
 
 # ===============================================
@@ -50,8 +50,8 @@ all_combo = getCombination(dataset_path, classes, slash)
 
 # ===============================================
 # Run functions, all saved results are not normalized!
-getMFCCs(dataset_path,             all_combo, fs, snippet_length, snippet_hop, slash, work_on_augmented, fft_length, fft_hop)
+getMFCCs(dataset_path,             all_combo, fs, snippet_length, snippet_hop, slash, work_on_augmented, fft_length, fft_hop, num_MFCCs)
 getMelSpectrogram(dataset_path,    all_combo, fs, snippet_length, snippet_hop, slash, work_on_augmented, fft_length, fft_hop, mel_length)
-getLoudnessHistogram(dataset_path, all_combo, fs, snippet_length, snippet_hop, slash, work_on_augmented, bin_size)
+#getLoudnessHistogram(dataset_path, all_combo, fs, snippet_length, snippet_hop, slash, work_on_augmented, bin_size)
 
 
