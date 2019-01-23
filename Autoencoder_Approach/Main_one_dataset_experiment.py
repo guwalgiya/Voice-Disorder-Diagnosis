@@ -37,7 +37,7 @@ sess        = tf.Session(config = tf.ConfigProto(gpu_options = gpu_options))
 
 # ===============================================
 # Environment
-parent_path = "/home/hguan/7100-Master-Project/Dataset-"
+parent_path = "/home/hguan/Voice-Disorder-Diagnosis/Dataset-"
 slash       = "/"
 
 

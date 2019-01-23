@@ -17,7 +17,7 @@ slash       = "/"
 classes           = ["Normal", "Pathol"]
 dataset_name      = "KayPentax"
 dataset_path      = parent_path + dataset_name
-work_on_augmented = True
+work_on_augmented = False
 
 
 # ===============================================

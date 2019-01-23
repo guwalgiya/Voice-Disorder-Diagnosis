@@ -81,12 +81,12 @@ def compressDictionary(dataset_path, classes, dsp_package, all_combo, slash, wor
 
     # ===============================================
     if work_on_augmentated:
-        dict_file_name = "Dictionary_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" +                  "_block" + str(fft_length) + "_hop" + str(fft_hop) + "_mel" + str(mel_length)
+        dict_file_name = "Dictionary_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms"                 
 
 
     # ===============================================
     else:
-        dict_file_name = "Dictionary_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" + "_unaugmented" + "_block" + str(fft_length) + "_hop" + str(fft_hop) + "_mel" + str(mel_length)
+        dict_file_name = "Dictionary_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" + "_unaugmented"
     
 
     # ===============================================

@@ -1,9 +1,9 @@
 # ===============================================
 # Import Packages and Functions
-from   compressMelSpectrogram import compressMelSpectrogram
-from   compressDictionary     import compressDictionary
-from   getCombination         import getCombination
-from   compressMFCCs          import compressMFCCs
+from compressMelSpectrogram import compressMelSpectrogram
+from compressDictionary     import compressDictionary
+from getCombination         import getCombination
+from compressMFCCs          import compressMFCCs
 
 
 # ===============================================

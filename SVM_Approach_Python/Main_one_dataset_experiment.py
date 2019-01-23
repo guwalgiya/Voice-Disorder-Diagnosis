@@ -12,7 +12,7 @@ import pickle
 
 # ===============================================
 # Environment
-parent_path = "/home/hguan/7100-Master-Project/Dataset-"
+parent_path = "/home/hguan/Voice-Disorder-Diagnosis/Dataset-"
 slash       = "/"
 
 

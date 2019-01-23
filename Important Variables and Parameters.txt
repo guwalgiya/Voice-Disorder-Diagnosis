@@ -1,0 +1,42 @@
+# ===============================================
+# Variables Related to Digital Signal Processing
+snippet_length: snippet's length - 500ms
+snippet_hop:    snippet's hop size - 100ms
+fft_length:     Fast Fourier transform block size - 512samples
+fft_hop         Fast Fourier transform hop   size - 128samples
+fs:             sample rate - 16000Hz
+x:              signal
+
+
+# =============================================== 
+# Variables Datasets
+work_on_augmentated: Boolean
+dataset_name:        "KayPentax" or "Spanish"
+dataset_path:        N/A
+parent_path:         N/A
+classes:             ["Normal", "Pathol"]
+slash:               "/"for Linux, "\\" for Windows
+
+
+# =============================================== 
+# When loading pre-saved data
+input_type           : "MFCCs" or "MelSpectrogram"
+data_file_name       : corresponding pickle file contains input representation (Aggrgated MFCCs or mel-spectrograms)
+aug_dict_file_name   : corresponding pickle file contains information of the augemented dataset
+unaug_dict_file_name : corresponding pickle file contains information of the unaugmented dataset
+
+
+# ===============================================
+# Cross Validation
+num_folds:        number of folds for cross-validation
+training_percent: percent of data used for training set, the rest are used for VALIDATION SET!!!!! (Make sure test set is split out first)
+If num_folds = 5, training_percent = 90, then we should have: 80% * 90% = 72% for the training set, 8% for set validation set , 20% for the test set.
+
+
+# ===============================================
+# Show Results
+file_results_SVM:          A list contains k macro accuracies we get from k-fold cross validation. Majority vote is applied to get file results.
+snippet_results_SVM:       A list contains k macro accuracies we get from k-fold cross validation. Majority vote is not applied here, so we get snippet results.
+total_file_con_mat_SVM:    An 2 * 2 numpy array, we add all k confuxion matrices together. Majority vote is applied to get file results.
+total_snippet_con_mat_SVM: An 2 * 2 numpy array, we add all k confuxion matrices together. Majority vote is not applied here, so we get snippet results.
+

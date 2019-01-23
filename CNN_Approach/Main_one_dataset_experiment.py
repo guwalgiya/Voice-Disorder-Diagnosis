@@ -145,19 +145,6 @@ unaug_dict          = pickle.load(temp_file_3)
 melSpectrogram_data = pickle.load(temp_file_1)
 
 
-# =============================================================================
-# Results Initialization
-file_results     = []
-snippet_results  = []
-file_con_mat     = np.array([[0,0],[0,0]])
-snippet_con_mat  = np.array([[0,0],[0,0]])
-
-file_results0     = []
-snippet_results0  = []
-file_con_mat0     = np.array([[0,0],[0,0]])
-snippet_con_mat0  = np.array([[0,0],[0,0]])
-
-
 # ===============================================
 # Load all combos from this dataset, combo = [Name, Class] example: ["WADFJS", "Pathol"]
 name_class_combo = np.asarray(getCombination(dataset_path, classes, slash))
