@@ -35,8 +35,8 @@ If num_folds = 5, training_percent = 90, then we should have: 80% * 90% = 72% fo
 
 # ===============================================
 # Show Results
-file_results_SVM:          A list contains k macro accuracies we get from k-fold cross validation. Majority vote is applied to get file results.
-snippet_results_SVM:       A list contains k macro accuracies we get from k-fold cross validation. Majority vote is not applied here, so we get snippet results.
-total_file_con_mat_SVM:    An 2 * 2 numpy array, we add all k confuxion matrices together. Majority vote is applied to get file results.
-total_snippet_con_mat_SVM: An 2 * 2 numpy array, we add all k confuxion matrices together. Majority vote is not applied here, so we get snippet results.
+file_results:          A list contains k macro accuracies we get from k-fold cross validation. Majority vote is applied to get file results.
+snippet_results:       A list contains k macro accuracies we get from k-fold cross validation. Majority vote is not applied here, so we get snippet results.
+total_file_con_mat:    An 2 * 2 numpy array, we add all k confuxion matrices together. Majority vote is applied to get file results.
+total_snippet_con_mat: An 2 * 2 numpy array, we add all k confuxion matrices together. Majority vote is not applied here, so we get snippet results.
 
