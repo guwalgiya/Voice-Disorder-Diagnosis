@@ -15,9 +15,9 @@ slash       = "/"
 # ===============================================
 # Dataset Initialization, dataset = Spanish or KayPentax
 classes           = ["Normal", "Pathol"]
-dataset_name      = "KayPentax"
+dataset_name      = "Spanish"
 dataset_path      = parent_path + dataset_name
-work_on_augmented = False
+work_on_augmented = True
 
 
 # ===============================================

@@ -8,15 +8,15 @@ import math
 
 # ===============================================
 # Environment
-pitch_shift_tool = "C:\\Master Degree\\7100 - Master Project\\elastiqueProCl.exe"
-parent_path      = "C:\\Master Degree\\7100 - Master Project\\Dataset-"
+pitch_shift_tool = "C:\\Archived Projects\\Voice-Disorder-Diagnosis\\_Others\\Pitchshifter\\elastiqueProCl.exe"
+parent_path      = "C:\\Archived Projects\\Voice-Disorder-Diagnosis\\_Others\\Dataset-"
 slash            = "\\"
 
 
 # ===============================================
 # Dataset Initialization
 classes      = ["Normal", "Pathol"]
-dataset_name = "KayPentax"
+dataset_name = "Spanish"
 dataset_path = parent_path + dataset_name
 
 

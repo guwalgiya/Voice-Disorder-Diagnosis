@@ -37,11 +37,6 @@ def compressDictionary(dataset_path, classes, dsp_package, all_combo, slash, wor
         # ===============================================
         label_3              = a_combo[1]
         
-        
-        # ===============================================  
-        if original_file_name in ["apa_p", "araa_p", "arba_p", "cpca_p", "cpra_p", "fgaa_p", "jaaa_p", "jgsa_p", "jmca_p"]:
-            a_combo[0] = a_combo[0][0 : -2]
-
 
         # ===============================================
         if work_on_augmentated:
@@ -69,10 +64,7 @@ def compressDictionary(dataset_path, classes, dsp_package, all_combo, slash, wor
 
 
         # ===============================================
-        if (a_combo[0] in ["apa", "araa", "arba", "cpca", "cpra", "fgaa", "jaaa", "jgsa", "jmca"]) and (a_combo[1] == "Pathol"):      
-            snippet_amount_dict[original_file_name] = [snippet_amount, label_1, label_2, label_3]
-        else:
-            snippet_amount_dict[original_file_name] = [snippet_amount, label_1, label_2, label_3]
+        snippet_amount_dict[original_file_name] = [snippet_amount, label_1, label_2, label_3]
         
 
         # =============================================== 

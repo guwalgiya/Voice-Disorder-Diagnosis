@@ -26,11 +26,6 @@ def compressMelSpectrogram(dataset_path, classes, dsp_package, all_combo, slash)
         # ===============================================
         cur_name = a_combo[0]
 
-
-        # ===============================================  
-        if cur_name in ["apa_p", "araa_p", "arba_p", "cpca_p", "cpra_p", "fgaa_p", "jaaa_p", "jgsa_p", "jmca_p"]:
-            a_combo[0] = a_combo[0][0 : -2]
-
    
         # ===============================================
         sub_folder         = a_combo[1]   + "_"                     + str(snippet_length) + "ms_"  + str(snippet_hop)   + "ms"
@@ -60,10 +55,7 @@ def compressMelSpectrogram(dataset_path, classes, dsp_package, all_combo, slash)
 
             # ===============================================
             # [file_name, pitch shift by semitone, mel_spectrogram] example: [aaa, "U1.5", mel_spectrogram]
-            if (cur_name in ["apa_p", "araa_p", "arba_p", "cpca_p", "cpra_p", "fgaa_p", "jaaa_p", "jgsa_p", "jmca_p"]):
-                data.append([cur_name, spectrogram_name.split('_')[1], mel_spectrogram])
-            else:
-                data.append([cur_name, spectrogram_name.split('_')[1], mel_spectrogram])
+            data.append([cur_name, spectrogram_name.split('_')[1], mel_spectrogram])
 
 
     # ===============================================

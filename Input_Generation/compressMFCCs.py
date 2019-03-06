@@ -24,12 +24,7 @@ def compressMFCCs(dataset_path, classes, dsp_package, all_combo, slash):
 
 
         # ===============================================
-        cure_name = a_combo[0]
-        
-
-        # ===============================================
-        if cure_name in ["apa_p", "araa_p", "arba_p", "cpca_p", "cpra_p", "fgaa_p", "jaaa_p", "jgsa_p", "jmca_p"]:
-            a_combo[0] = a_combo[0][0 : -2]
+        cur_name = a_combo[0]
 
 
         # ===============================================
@@ -60,10 +55,7 @@ def compressMFCCs(dataset_path, classes, dsp_package, all_combo, slash):
 
             # ===============================================
             # [file_name, pitch shift by semitone, mel_spectrogram] example: ["aaa", "N0.0", MFCCs]
-            if (cure_name in ["apa_p", "araa_p", "arba_p", "cpca_p", "cpra_p", "fgaa_p", "jaaa_p", "jgsa_p", "jmca_p"]):
-                data.append([cure_name, MFCCs_name.split('_')[1], MFCCs])
-            else:
-                data.append([cure_name, MFCCs_name.split('_')[1], MFCCs])
+            data.append([cur_name, MFCCs_name.split('_')[1], MFCCs])
         
         
     # ===============================================
