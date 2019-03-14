@@ -1,6 +1,9 @@
 /FastPush_autoencoder_approach.sh
 /FastPush_SVM_Approach_Python.sh
+/FastPush_Transfer_Approach.sh
 /FastPush_Input_Generation.sh
 /FastPush_CNN_Approach.sh
+/Transfer_Approach/VGGish
 /Killed_Experiment
 /_Others
+*.pyc

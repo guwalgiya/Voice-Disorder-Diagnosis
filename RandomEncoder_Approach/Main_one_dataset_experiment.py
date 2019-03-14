@@ -182,8 +182,8 @@ for fold_index in range(num_folds):
     # Load all the snippet"s melSpectrograms
     # Training set can use either augmented data or unaugmented data
     # Validation set and test set must use unaugmented data
-    training_package = loadMelSpectrogram(training_combo, classes, num_rows, num_time_frames, input_type, melSpectrogram_data, True,  aug_dict)   
-    validate_package = loadMelSpectrogram(validate_combo, classes, num_rows, num_time_frames, input_type, melSpectrogram_data, True,  aug_dict)   
+    training_package = loadMelSpectrogram(training_combo, classes, num_rows, num_time_frames, input_type, melSpectrogram_data, False, unaug_dict)   
+    validate_package = loadMelSpectrogram(validate_combo, classes, num_rows, num_time_frames, input_type, melSpectrogram_data, False, unaug_dict)   
     test_package     = loadMelSpectrogram(test_combo,     classes, num_rows, num_time_frames, input_type, melSpectrogram_data, False, unaug_dict)
     
 

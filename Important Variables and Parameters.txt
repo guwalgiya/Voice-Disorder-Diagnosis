@@ -40,3 +40,6 @@ snippet_results:       A list contains k macro accuracies we get from k-fold cro
 total_file_con_mat:    An 2 * 2 numpy array, we add all k confuxion matrices together. Majority vote is applied to get file results.
 total_snippet_con_mat: An 2 * 2 numpy array, we add all k confuxion matrices together. Majority vote is not applied here, so we get snippet results.
 
+
+# ===============================================
+# Show Results
