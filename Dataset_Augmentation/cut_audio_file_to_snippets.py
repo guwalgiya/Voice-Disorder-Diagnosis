@@ -17,7 +17,7 @@ parent_path = "/home/hguan/Voice-Disorder-Diagnosis/Dataset-"
 classes             = ["Normal", "Pathol"]
 dataset_name        = "Spanish"
 dataset_path        = parent_path + dataset_name
-work_on_augmentated = True
+work_on_augmentated = False
 
 
 # ===============================================
@@ -25,7 +25,7 @@ work_on_augmentated = True
 fs              = 25000
 new_fs          = 16000
 snippet_hop     = 100 
-snippet_length  = 500 
+snippet_length  = 1000
 
 
 # ===============================================
@@ -62,14 +62,19 @@ def cut_audio_file_to_snippets(dataset_path, a_class, fs, new_fs, snippet_length
         
 
         # ===============================================
-        fft_length = math.floor(new_fs * snippet_length  / 1000)
-        fft_hop    = math.floor(new_fs * snippet_hop     / 1000)
+        # this is not real fft, just want to keep the name simple
+        fft_length = math.floor(new_fs * snippet_length / 1000)
+        fft_hop    = math.floor(new_fs * snippet_hop    / 1000)
         
         
         # ===============================================
-        blocking(x, fft_length, fft_hop, new_fs, output_main_folder, name[0 : len(name) - 4] + "_" + str(snippet_length)  + "ms"
-                                                                                             + "_" + str(snippet_hop)     + "ms")        
+        new_name = name[0 : len(name) - 4] + "_" + str(snippet_length) + "ms" + "_" + str(snippet_hop) + "ms"
         
+
+        # ===============================================
+        blocking(x, fft_length, fft_hop, new_fs, output_main_folder, new_name)        
+        
+
         # ===============================================
         print(name, "is cut into snippets")
     
@@ -78,17 +83,17 @@ def cut_audio_file_to_snippets(dataset_path, a_class, fs, new_fs, snippet_length
 def blocking(x, fft_length, fft_hop, new_fs, output_main_folder, filename):
 
 
-	# ===============================================
+    # ===============================================
     xb = block_audio(x, fft_length, fft_hop)
-    
 
+    
     # ===============================================
     _, n = xb.shape
 
 
     # ===============================================
     for i in range(n):
-        x_i = xb[:,i]
+        x_i = xb[:, i]
         if i + 1 <= 9:
             index = "0" + str(i + 1)
         else:
@@ -116,25 +121,36 @@ def blocking(x, fft_length, fft_hop, new_fs, output_main_folder, filename):
 def block_audio(x, fft_length, fft_hop):
 
 
-	# ===============================================
-    num_blocks = math.ceil(len(x) / fft_hop)
+    # ===============================================
+    if len(x) <= fft_length:
+
+        xb       = np.zeros((len(x), 1))
+        xb[:, 0] = x
 
 
     # ===============================================
-    xb = np.zeros((fft_length, num_blocks))
+    else:
+
+        
+        # ===============================================
+        num_blocks = math.ceil(len(x) / fft_hop)
 
 
-    # ===============================================
-    for i in range(num_blocks):
-        try:
-            xb[:, i] = x[i * fft_hop : (i * fft_hop + fft_length)]  
-        except:
-            i = i + 1
-            break
+        # ===============================================
+        xb = np.zeros((fft_length, num_blocks))
 
 
-    # ===============================================
-    xb = xb[:, 0 : i - 1]
+        # ===============================================
+        for i in range(num_blocks):
+            try:
+                xb[:, i] = x[i * fft_hop : (i * fft_hop + fft_length)]  
+            except:
+                i = i + 1
+                break
+
+
+        # ===============================================
+        xb = xb[:, 0 : i - 1]
 
 
     # ===============================================
