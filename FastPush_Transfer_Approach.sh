@@ -1,1 +1,0 @@
-scp -r Transfer_Approach hguan@deepnet.music.gatech.edu:~/Voice-Disorder-Diagnosis
