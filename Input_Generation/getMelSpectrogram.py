@@ -59,7 +59,7 @@ def getMelSpectrogram(dataset_path, all_combo, fs, snippet_length, snippet_hop, 
             # =============================================== 
             # save that aggregated MFCC Vector in a txt version, need to compress them to a pickle file afterward
             # remark: filename has a .wav extention, remove it first
-            np.savetxt(save_path + slash +  a_snippet_name[0:-4] + '.txt', S, fmt = "%10.5f")
+            np.savetxt(save_path + slash +  a_snippet_name[0 : -4], S)
         
         
         # ===============================================

@@ -70,7 +70,7 @@ def getMFCCs(dataset_path, all_combo, fs, snippet_length, snippet_hop, slash, wo
             # =============================================== 
             # save that aggregated MFCC Vector in a txt version, need to compress them to a pickle file afterward
             # remark: filename has a .wav extention, remove it first
-            np.savetxt(save_path + slash +  a_snippet_name[0 : -4] + '.txt', aggregate_mfccs, fmt = '%10.5f')
+            np.savetxt(save_path + slash +  a_snippet_name[0 : -4], aggregate_mfccs)
         
         
         # ===============================================

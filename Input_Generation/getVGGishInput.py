@@ -1,7 +1,7 @@
 # ===============================================
 # Add VGGish's path
 import sys
-sys.path.append('../VGGish_Original')
+sys.path.append("../VGGish_Original")
 
 
 # ===============================================
@@ -9,14 +9,13 @@ sys.path.append('../VGGish_Original')
 from   vggish_input import wavfile_to_examples   as WavEx
 from   os           import walk, path, makedirs
 import numpy        as     np
-import librosa
 
 
 # ===============================================
 # Main Function
-def getVGGishInput(dataset_path, all_combo, snippet_length, snippet_hop, slash, work_on_augmented, copy_it_self):
+def getVGGishInput(dataset_path, all_combo, snippet_length, snippet_hop, slash, work_on_augmented):
+ 
 
-    
     # ===============================================
     for a_combo in all_combo:
         
@@ -38,16 +37,10 @@ def getVGGishInput(dataset_path, all_combo, snippet_length, snippet_hop, slash, 
         # ===============================================
         snippet_path = dataset_path + slash + temp_folder + slash + cur_name
         
-
-        # ===============================================
-        if copy_it_self:
-            save_path = snippet_path + "_VGGish_" + "Copy"
-        else:
-            save_path = snippet_path + "_VGGish_" + "zeroPad"
-
-
+            
         # ===============================================
         # Make sure the saving directory is valid
+        save_path = snippet_path + "_VGGish_Input"
         dir       = path.dirname(save_path + "/dummy.aaa")
         if not path.exists(dir):
             makedirs(dir)
@@ -66,26 +59,17 @@ def getVGGishInput(dataset_path, all_combo, snippet_length, snippet_hop, slash, 
             
             # =============================================== 
             S = WavEx(a_snippet_path)
-            
-
-            # ===============================================
-            S_full    = np.zeros((3, S.shape[1], S.shape[2]))
-            S_full[0] = S
-
-            if copy_it_self:
-               S_full[1] = S
-               S_full[2] = S
 
 
             # =============================================== 
             # save that aggregated MFCC Vector in a txt version, need to compress them to a pickle file afterward
             # remark: filename has a .wav extention, remove it first
-            np.savetxt(save_path + slash +  a_snippet_name[0 : -4] + '.txt', S_full, fmt = "%10.5f")
+            np.save(save_path + slash +  a_snippet_name[0 : -4], S)
         
         
         # ===============================================
         # Report: for one file, all of its snippets' aggregated mel-spectrogram are computed and stored
-        print(cur_name, "'s mel-spectrograms are computed and saved")
+        print(cur_name, "'s inputs for VGGish are computed and saved")
     
 
         

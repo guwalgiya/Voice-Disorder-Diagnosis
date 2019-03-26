@@ -46,7 +46,7 @@ def compressMelSpectrogram(dataset_path, classes, dsp_package, all_combo, slash)
             
             
             # ===============================================
-            mel_spectrogram = np.loadtxt(spectrogram_path + slash + spectrogram_name)
+            mel_spectrogram = np.load(spectrogram_path + slash + spectrogram_name)
             
 
             # ===============================================

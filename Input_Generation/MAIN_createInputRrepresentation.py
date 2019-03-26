@@ -2,6 +2,7 @@
 # Import Packages and Functions
 from getMFCCs             import getMFCCs
 from getCombination       import getCombination
+from getVGGishInput       import getVGGishInput
 from getMelSpectrogram    import getMelSpectrogram
 from getLoudnessHistogram import getLoudnessHistogram
 
@@ -15,14 +16,14 @@ slash       = "/"
 # ===============================================
 # Dataset Initialization, dataset = Spanish or KayPentax
 classes           = ["Normal", "Pathol"]
-dataset_name      = "Spanish"
+dataset_name      = "KayPentax"
 dataset_path      = parent_path + dataset_name
-work_on_augmented = True
+work_on_augmented = False
 
 
 # ===============================================
 # Dsp Initialization, snippet_length, snippet_hop are in milliseconds
-snippet_length = 500   
+snippet_length = 1000
 snippet_hop    = 100 
 fft_length     = 512
 fft_hop        = 128
@@ -50,8 +51,9 @@ all_combo = getCombination(dataset_path, classes, slash)
 
 # ===============================================
 # Run functions, all saved results are not normalized!
-getMFCCs(dataset_path,             all_combo, fs, snippet_length, snippet_hop, slash, work_on_augmented, fft_length, fft_hop, num_MFCCs)
-getMelSpectrogram(dataset_path,    all_combo, fs, snippet_length, snippet_hop, slash, work_on_augmented, fft_length, fft_hop, mel_length)
-#getLoudnessHistogram(dataset_path, all_combo, fs, snippet_length, snippet_hop, slash, work_on_augmented, bin_size)
+# getVGGishInput(dataset_path,       all_combo,     snippet_length, snippet_hop, slash, work_on_augmented)
+# getMFCCs(dataset_path,             all_combo, fs, snippet_length, snippet_hop, slash, work_on_augmented, fft_length, fft_hop, num_MFCCs)
+# getMelSpectrogram(dataset_path,    all_combo, fs, snippet_length, snippet_hop, slash, work_on_augmented, fft_length, fft_hop, mel_length)
+# getLoudnessHistogram(dataset_path, all_combo, fs, snippet_length, snippet_hop, slash, work_on_augmented, bin_size)
 
 

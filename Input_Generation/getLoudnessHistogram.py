@@ -58,7 +58,7 @@ def getLoudnessHistogram(dataset_path, all_combo, fs, snippet_length, snippet_ho
             # =============================================== 
             # save that histogram in a txt version, need to compress them to a pickle file afterward
             # remark: filename has a .wav extention, remove it first
-            np.savetxt(save_path + slash +  a_snippet_name[0 : -4] + ".txt", L, fmt = '%10.5f')            
+            np.save(save_path + slash +  a_snippet_name[0 : -4], L)            
 
         
         # ===============================================

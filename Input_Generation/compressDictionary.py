@@ -46,20 +46,19 @@ def compressDictionary(dataset_path, classes, dsp_package, all_combo, slash, wor
 
         
         # ===============================================
-        spectrogram_folder = a_combo[0]   + "_MelSpectrogram_block" + str(fft_length) + "_hop" + str(fft_hop)       + "_mel" + str(mel_length)
-        spectrogram_path   = dataset_path + slash                    + sub_folder      + "/"    + spectrogram_folder
+        wavfile_path = dataset_path + slash + sub_folder + slash + a_combo[0]
 
 
         # ===============================================
-        spectrogram_name_list = []
-        for (dirpath, dirnames, filenames) in walk(spectrogram_path):
-            spectrogram_name_list.extend(filenames)
+        wavfile_name_list = []
+        for (dirpath, dirnames, filenames) in walk(wavfile_path):
+            wavfile_name_list.extend(filenames)
             break
         
 
         # ===============================================
         snippet_amount = 0
-        for spectrogram_name in spectrogram_name_list:
+        for wavfile_name in wavfile_name_list:
             snippet_amount = snippet_amount + 1
 
 

@@ -7,7 +7,11 @@ import pickle
 
 # ===============================================
 # Main function of this file
-def compressVGGishInput(dataset_path, classes, snippet_length, snippet_hop, all_combo, slash):
+def compressVGGishInput(dataset_path, classes, dsp_package, all_combo, slash):
+    
+
+    # ===============================================
+    snippet_length, snippet_hop, _, _, _ = dsp_package
     
 
     # ===============================================
@@ -24,25 +28,25 @@ def compressVGGishInput(dataset_path, classes, snippet_length, snippet_hop, all_
 
 
         # ===============================================
-        sub_folder   = a_combo[1]   + "_"            + str(snippet_length) + "ms_"  + str(snippet_hop) + "ms"
-        MFCCs_folder = a_combo[0]   + "_MFCCs_block" + str(fft_length)     + "_hop" + str(fft_hop) 
-        MFCCs_path   = dataset_path + slash          + sub_folder          + slash  + MFCCs_folder
+        sub_folder         = a_combo[1]   + "_"             + str(snippet_length) + "ms_"  + str(snippet_hop) + "ms"
+        VGGishInput_folder = a_combo[0]   + "_VGGish_Input"
+        VGGishInput_path   = dataset_path + slash           + sub_folder          + slash  + VGGishInput_folder
 
 
         # ===============================================
-        MFCCs_name_list = []
-        for (dirpath, dirnames, filenames) in walk(MFCCs_path):
-            MFCCs_name_list.extend(filenames)
+        VGGishInput_name_list = []
+        for (dirpath, dirnames, filenames) in walk(VGGishInput_path):
+            VGGishInput_name_list.extend(filenames)
             break
         
 
         # ===============================================
         snippet_amount = 0
-        for MFCCs_name in MFCCs_name_list:
+        for VGGishInput_name in VGGishInput_name_list:
 
 
             # ===============================================
-            MFCCs = np.loadtxt(MFCCs_path + slash + MFCCs_name)
+            VGGishInput = np.load(VGGishInput_path + slash + VGGishInput_name)
 
 
             # ===============================================
@@ -50,8 +54,8 @@ def compressVGGishInput(dataset_path, classes, snippet_length, snippet_hop, all_
 
 
             # ===============================================
-            # [file_name, pitch shift by semitone, mel_spectrogram] example: ["aaa", "N0.0", MFCCs]
-            data.append([cur_name, MFCCs_name.split('_')[1], MFCCs])
+            # [file_name, pitch shift by semitone, mel_spectrogram] example: ["aaa", "N0.0", VGGishInput]
+            data.append([cur_name, VGGishInput_name.split('_')[1], VGGishInput])
         
         
     # ===============================================
@@ -59,7 +63,7 @@ def compressVGGishInput(dataset_path, classes, snippet_length, snippet_hop, all_
     
 
     # ===============================================
-    data_file_name = "VGGish_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms" + "_block" + str(fft_length) + "_hop" + str(fft_hop) 
+    data_file_name = "VGGish_Input_" + str(snippet_length) + "ms_" + str(snippet_hop) + "ms"
     
 
     # ===============================================
@@ -71,4 +75,4 @@ def compressVGGishInput(dataset_path, classes, snippet_length, snippet_hop, all_
 
     
     # ===============================================
-    print("MFCC data is saved as a Pickle File")
+    print("VGGisn Inputs are saved as a Pickle File")

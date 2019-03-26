@@ -46,7 +46,7 @@ def compressMFCCs(dataset_path, classes, dsp_package, all_combo, slash):
 
 
             # ===============================================
-            MFCCs = np.loadtxt(MFCCs_path + slash + MFCCs_name)
+            MFCCs = np.load(MFCCs_path + slash + MFCCs_name)
 
 
             # ===============================================
