@@ -65,9 +65,10 @@ unaug_dict_file_name = "Dictionary_"     + str(snippet_length) + "ms_" + str(sni
 
 
 # ===============================================
-# Cross-Validation Initialization
-num_folds        = 5   
-training_percent = 90
+# Training / Cross-Validation Initialization
+num_folds          = 5   
+training_percent   = 90
+train_on_augmented = True
 
 
 # ===============================================
@@ -146,6 +147,13 @@ melSpectrogram_data = pickle.load(temp_file_1)
 
 
 # ===============================================
+if train_on_augmented:
+    train_dict = aug_dict
+else:
+    train_dict = unaug_dict
+
+
+# ===============================================
 # Load all combos from this dataset, combo = [Name, Class] example: ["WADFJS", "Pathol"]
 name_class_combo = np.asarray(getCombination(dataset_path, classes, slash))
 
@@ -217,9 +225,9 @@ for fold_index in range(num_folds):
     # Load all the snippet"s melSpectrograms
     # Training set can use either augmented data or unaugmented data
     # Validation set and test set must use unaugmented data
-    training_package = loadMelSpectrogram(training_combo, classes, mel_length, num_time_frames, input_type, melSpectrogram_data, False, unaug_dict)   
-    validate_package = loadMelSpectrogram(validate_combo, classes, mel_length, num_time_frames, input_type, melSpectrogram_data, False, unaug_dict)   
-    test_package     = loadMelSpectrogram(test_combo,     classes, mel_length, num_time_frames, input_type, melSpectrogram_data, False, unaug_dict)
+    training_package = loadMelSpectrogram(training_combo, classes, mel_length, num_time_frames, input_type, melSpectrogram_data, train_on_augmented, train_dict)   
+    validate_package = loadMelSpectrogram(validate_combo, classes, mel_length, num_time_frames, input_type, melSpectrogram_data, False,              unaug_dict)   
+    test_package     = loadMelSpectrogram(test_combo,     classes, mel_length, num_time_frames, input_type, melSpectrogram_data, False,              unaug_dict)
     
 
     # ===============================================
@@ -458,7 +466,7 @@ print(snippet_overall_acc / len(classes))
 # ===============================================
 # Show Final Results after cross-validation
 # Classification Accuracy for each fold (file level)
-print("Now showing the result if we search CNN"s layers: ")
+print("Now showing the result if we search CNN's layers: ")
 print("--------------------------------")
 print("file results")
 print(file_results_SVM)

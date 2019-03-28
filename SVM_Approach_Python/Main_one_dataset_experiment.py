@@ -37,9 +37,10 @@ unaug_dict_file_name = "Dictionary_" + str(snippet_length) + "ms_" + str(snippet
 
 
 # ===============================================
-# Cross-Validation Initialization
-num_folds        = 5
-training_percent = 90
+# Training / Cross-Validation Initialization
+num_folds          = 5   
+training_percent   = 90
+train_on_augmented = True
 
 
 # ===============================================
@@ -71,6 +72,13 @@ temp_file_3  = open(dataset_path + slash + unaug_dict_file_name + ".pickle", "rb
 aug_dict   = pickle.load(temp_file_2)
 unaug_dict = pickle.load(temp_file_3)
 MFCCs_data = pickle.load(temp_file_1)
+
+
+# ===============================================
+if train_on_augmented:
+    train_dict = aug_dict
+else:
+    train_dict = unaug_dict
 
 
 # ===============================================
@@ -145,9 +153,9 @@ for fold_index in range(num_folds):
     # Load all the snippet"s aggregated MFCCs
     # Training set can use either augmented data or unaugmented data
     # Validation set and test set must use unaugmented data
-    training_package  = loadMFCCs(training_combo, classes, num_features, MFCCs_data, True,  aug_dict)   
-    validate_package  = loadMFCCs(validate_combo, classes, num_features, MFCCs_data, False, unaug_dict)  
-    test_package      = loadMFCCs(test_combo,     classes, num_features, MFCCs_data, False, unaug_dict)
+    training_package  = loadMFCCs(training_combo, classes, num_features, MFCCs_data, train_on_augmented, train_dict)   
+    validate_package  = loadMFCCs(validate_combo, classes, num_features, MFCCs_data, False,              unaug_dict)  
+    test_package      = loadMFCCs(test_combo,     classes, num_features, MFCCs_data, False,              unaug_dict)
     
 
     # ===============================================
