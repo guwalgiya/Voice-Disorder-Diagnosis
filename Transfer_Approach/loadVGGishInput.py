@@ -1,13 +1,11 @@
 # ===============================================
 # Import Packages and Functions
-import numpy   as     np
-import librosa
-import math
+import numpy as np
 
 
 # ===============================================
 # Main Functions
-def loadMelSpectrogram(selected_combo, classes, num_rows, num_time_frames, input_type, data, work_on_augmented, snippet_dict):
+def loadVGGishInput(selected_combo, classes, data, VGGish_input_shape, work_on_augmented, snippet_dict):
   
   
     # ===============================================
@@ -57,9 +55,9 @@ def loadMelSpectrogram(selected_combo, classes, num_rows, num_time_frames, input
 
     # ===============================================   
     # Prepare to load data
-    loaded_data    = np.zeros((sum(snippet_num_list), num_rows, num_time_frames))
-    start_index    = 0
-    end_index      = 0    
+    loaded_data = np.zeros((sum(snippet_num_list), ) + VGGish_input_shape)
+    start_index = 0
+    end_index   = 0    
     for combo in selected_combo:
 
 
@@ -73,30 +71,18 @@ def loadMelSpectrogram(selected_combo, classes, num_rows, num_time_frames, input
         # ===============================================  
         # Load augmented data or not
         if work_on_augmented:
-            melSpectrograms = [data_point[2] for data_point in data if (data_point[0] == cur_name)]
+            VGGish_inputs = [data_point[2] for data_point in data if (data_point[0] == cur_name)]
         else:
-            melSpectrograms = [data_point[2] for data_point in data if (data_point[0] == cur_name and data_point[1] == "N0.0")]
-         
-
-
-        # ===============================================  
-        # Load pre-saved melspectrogram, and compute a "MFCCs-gram" with 20 MFCCs
-        if input_type == "MFCCs":
-            for i in np.arange(start_index, end_index):
-                S              = melSpectrograms[i - start_index]
-                loaded_data[i] = librosa.feature.mfcc(S = librosa.power_to_db(S), n_mfcc = 20)
+            VGGish_inputs = [data_point[2] for data_point in data if (data_point[0] == cur_name and data_point[1] == "N0.0")]
         
-
-        # ===============================================  
-        # Load pre-saved melspectrogram, and do normalization for each one of them   
-        else:
-            for i in np.arange(start_index, end_index):
-                S              = melSpectrograms[i - start_index]
-                loaded_data[i] = S / S.max()
         
+        # ===============================================
+        for i in np.arange(start_index, end_index):
+            loaded_data[i] = VGGish_inputs[i - start_index]
+
 
         # ===============================================  
-        start_index  = start_index + snippet_dict[cur_name][0]
+        start_index = start_index + snippet_dict[cur_name][0]
     
     
     # ===============================================
