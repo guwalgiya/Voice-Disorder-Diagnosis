@@ -31,7 +31,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 # ===============================================
 # GPU Setting
-gpu_taken   = 1
+gpu_taken   = 0.8
 gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction  = gpu_taken)
 sess        = tf.Session(config = tf.ConfigProto(gpu_options = gpu_options))
 
@@ -44,8 +44,8 @@ slash       = "/"
 
 # ===============================================
 # Dsp Initialization
-snippet_hop        = 100
-snippet_length     = 1000
+snippet_hop    = 100
+snippet_length = 1000
 
 
 # ===============================================
@@ -74,14 +74,16 @@ train_on_augmented = True
 # ===============================================
 # CNN Training Initialization, metric = "acc" for keras
 metric               = "acc"
-batch_size           = 128
+batch_size           = 64
 epoch_limit          = 100000
 adam_beta_1          = 0.9
 adam_beta_2          = 0.999
-learning_rate        = 0.00001
+learning_rate        = 0.000001
 loss_function        = "mean_squared_error"
 shuffle_choice       = True
 training_verbose     = 1
+trainable_list_1     = [True,  True,  True,  True,  True]
+trainable_list_2     = [False, False, False, False, False]
 CNN_training_package = [learning_rate, epoch_limit, batch_size, metric, shuffle_choice, loss_function, adam_beta_1, adam_beta_2, training_verbose]
 
 
@@ -92,21 +94,11 @@ saved_model_name      = "best_model_this_fold.hdf5"
 callbacks_monitor     = "val_loss"
 callbacks_verbose     = 0
 if_only_save_best     = True
-callbacks_patience    = 30
+callbacks_patience    = 10
 val_loss_plot_name    = "Val_Loss_Plot_"
 callbacks_min_delta   = 0.0001
 CNN_callbacks_package = [saved_model_name, callbacks_mode, callbacks_monitor,  callbacks_patience, callbacks_min_delta, callbacks_verbose, if_only_save_best]
   
-
-# ===============================================
-# SVM Initialization
-c_values             = [0.1, 1, 10, 100]
-svm_verbose          = 0
-svm_tolerance        = 0.001
-svm_max_iteration    = 1000
-svm_training_package = [c_values, svm_verbose, svm_tolerance, svm_max_iteration]
-
-
 
 # ===============================================
 # Result Representation Initialization
@@ -117,16 +109,8 @@ total_snippet_con_mat_CNN = np.array([[0,0],[0,0]])
 
 
 # ===============================================
-# Result Representation Initialization
-file_results_SVM          = []
-snippet_results_SVM       = []
-total_file_con_mat_SVM    = np.array([[0,0],[0,0]])
-total_snippet_con_mat_SVM = np.array([[0,0],[0,0]])
-
-
-# ===============================================
 # Loading Pickle
-temp_file_1  = open(dataset_path + slash + data_file_name       + ".pickle", "rb")  
+temp_file_1  = open(dataset_path + slash + data_file_name       + ".pickle", "rb")
 temp_file_2  = open(dataset_path + slash + aug_dict_file_name   + ".pickle", "rb")
 temp_file_3  = open(dataset_path + slash + unaug_dict_file_name + ".pickle", "rb")
 
@@ -193,17 +177,17 @@ for fold_index in range(num_folds):
 
     # ===============================================
     # For each class, get traininging_validation files and test file
-    normal_training_validate_combo = name_class_combo[normal_split_index[fold_index][0]].tolist() 
-    pathol_training_validate_combo = name_class_combo[pathol_split_index[fold_index][0]].tolist()  
-    normal_test_combo              = name_class_combo[normal_split_index[fold_index][1]].tolist()  
-    pathol_test_combo              = name_class_combo[pathol_split_index[fold_index][1]].tolist() 
+    normal_training_validate_combo = name_class_combo[normal_split_index[fold_index][0]].tolist()
+    pathol_training_validate_combo = name_class_combo[pathol_split_index[fold_index][0]].tolist()
+    normal_test_combo              = name_class_combo[normal_split_index[fold_index][1]].tolist()
+    pathol_test_combo              = name_class_combo[pathol_split_index[fold_index][1]].tolist()
 
 
     # ===============================================
     # For each class, split traininging data and validation data
-    [normal_training_combo, normal_validate_combo, _] = splitData(normal_training_validate_combo, training_percent, 100 - training_percent, 0) 
+    [normal_training_combo, normal_validate_combo, _] = splitData(normal_training_validate_combo, training_percent, 100 - training_percent, 0)
     [pathol_training_combo, pathol_validate_combo, _] = splitData(pathol_training_validate_combo, training_percent, 100 - training_percent, 0)
-    
+
 
     # ===============================================
     # Combine traininging set, validation set, test set
@@ -247,11 +231,20 @@ for fold_index in range(num_folds):
     # Train CNN
     training_history = myVGGish(training_data,           training_label_1, training_label_2, 
                                 validate_data,           validate_label_2, 
-                                classes,
-                                VGGish_train_shape,
+                                classes,                 "VGGish",
+                                VGGish_train_shape,      trainable_list_1, 
                                 CNN_training_package,
                                 CNN_callbacks_package)
     
+    
+    # ===============================================
+    # Train CNN
+    training_history = myVGGish(training_data,           training_label_1, training_label_2, 
+                                validate_data,           validate_label_2, 
+                                classes,                 "retrained-VGGish",
+                                VGGish_train_shape,      trainable_list_2,
+                                CNN_training_package,
+                                CNN_callbacks_package)
 
     # ===============================================
     # Load Trained CNN
@@ -274,5 +267,72 @@ for fold_index in range(num_folds):
     # Unpack the evaluation result
     fold_file_acc, fold_file_con_mat, fold_snippet_acc, fold_snippet_con_mat = fold_result_package
 
-    print(fold_file_acc)
+    
+    # ===============================================
+    # Print the result for this fold 
+    print("Now we have results directly from the CNN:")
+    print("The file macro accuracy for this fold is:    ", fold_file_acc)
+    print("The snippet macro accuracy for this fold is: ", fold_snippet_acc)
+    print("File confusion matrix for this fold is: ")
     print(fold_file_con_mat)
+    print("Snippet confusion matrix for this fold is:")
+    print(fold_snippet_con_mat)
+
+
+    # ===============================================
+    # Update overall results
+    file_results_CNN.append(fold_file_acc)
+    snippet_results_CNN.append(fold_snippet_acc)
+
+
+    # ===============================================
+    # Update overall confusion matrix
+    total_file_con_mat_CNN    = total_file_con_mat_CNN    + fold_file_con_mat
+    total_snippet_con_mat_CNN = total_snippet_con_mat_CNN + fold_snippet_con_mat
+
+
+# ===============================================
+# Show Final Results after cross-validation
+# Classification Accuracy for each fold (file level)
+print("Now showing the result if we use CNN directly: ")
+print("--------------------------------")
+print("file results")
+print(file_results_CNN)
+print(sum(file_results_CNN) / len(file_results_CNN))
+
+
+# ===============================================
+# Show Final Results after cross-validation
+# Classification Accuracy for each fold (snippet level)
+print("--------------------------------")
+print("snippet results")
+print(snippet_results_CNN)
+print(sum(snippet_results_CNN) / len(snippet_results_CNN))
+
+
+# ===============================================
+# Macro Accuracy for the whole experiment (file level)
+print("--------------------------------")
+print("final file results")
+print(total_file_con_mat_CNN)
+
+
+# ===============================================
+file_overall_acc = 0;
+for i in range(len(total_file_con_mat_CNN[0])):
+    file_overall_acc = file_overall_acc + total_file_con_mat_CNN[i][i] / sum(total_file_con_mat_CNN[i])
+print(file_overall_acc / len(classes))
+
+
+# ===============================================
+# Macro Accuracy for the whole experiment (snippet level)
+print("--------------------------------")
+print("final snippet results")
+print(total_snippet_con_mat_CNN)
+
+
+# ===============================================
+snippet_overall_acc = 0;
+for i in range(len(total_snippet_con_mat_CNN[0])):
+    snippet_overall_acc = snippet_overall_acc + total_snippet_con_mat_CNN[i][i] / sum(total_snippet_con_mat_CNN[i])
+print(snippet_overall_acc / len(classes)) 
