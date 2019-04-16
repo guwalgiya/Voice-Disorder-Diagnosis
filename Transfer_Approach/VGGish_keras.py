@@ -68,19 +68,13 @@ def myVGGish(train_data, train_snippet_labels_1, train_snippet_labels_2, validat
     if training_based_on == "VGGish":
         VGGish.load_weights("vggish_weights.ckpt")
         VGGish.add(Dense(64,           activation = "relu"))
-        # VGGish.add(Dense(64,           activation = "relu"))
-        # VGGish.add(Dense(32,           activation = "relu"))
-        # VGGish.add(Dense(32,           activation = "relu"))
-        # VGGish.add(Dense(16,           activation = "relu"))
-        # VGGish.add(Dense(16,           activation = "relu"))
+        VGGish.add(Dense(32,           activation = "relu"))
+        VGGish.add(Dense(16,           activation = "relu"))
         VGGish.add(Dense(len(classes), activation = "softmax"))
     else:
         VGGish.add(Dense(64,           activation = "relu"))
-        # VGGish.add(Dense(64,           activation = "relu"))
-        # VGGish.add(Dense(32,           activation = "relu"))
-        # VGGish.add(Dense(32,           activation = "relu"))
-        # VGGish.add(Dense(16,           activation = "relu"))
-        # VGGish.add(Dense(16,           activation = "relu"))
+        VGGish.add(Dense(32,           activation = "relu"))
+        VGGish.add(Dense(16,           activation = "relu"))
         VGGish.add(Dense(len(classes), activation = "softmax"))
         VGGish.load_weights(saved_model_name)
     
