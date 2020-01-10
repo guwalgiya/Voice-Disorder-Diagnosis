@@ -1,6 +1,6 @@
 # Voice-Disorder-Diagnosis
 
-This study explores the possibilites of using Deep Learning to assign voice recordingins into one of the two classes - Normal and Pathological.
+This study explores the possibilites of using Deep Learning to assign voice recordingings into one of the two classes - Normal and Pathological.
 Most of the experiments were carreid out in 2018. 
 
 <br/>
